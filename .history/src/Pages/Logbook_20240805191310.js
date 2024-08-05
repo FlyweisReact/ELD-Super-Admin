@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import isymbol from "../Assets/Logbook/isymbol.svg";
 import refresh from "../Assets/Logbook/refresh.svg";
 import statusfilter from "../Assets/Logbook/statusfilter.svg";
+import dualarrow from "../Assets/Logbook/dualarrow.svg";
+import { LuArrowDownUp } from "react-icons/lu";
 import { GoDotFill } from "react-icons/go";
 import redisymbol from "../Assets/Logbook/redisymbol.svg";
 import dot from "../Assets/Dashboard/dot.svg";

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { IoCloseSharp, IoFilterOutline } from "react-icons/io5";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoMdClose } from "react-icons/io";
 import { MdOutlineEdit } from "react-icons/md";
 import { LuArrowUpDown } from "react-icons/lu";
 import DateFilter from "../Components/DateFilter";
