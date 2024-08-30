@@ -1,0 +1,130 @@
+/** @format */
+
+@media (max-width: 786px) {
+    .login-page .container .logo-container img {
+      max-width: 150px;
+    }
+    .login-page .container .detail-tab {
+      padding: 20px;
+    }
+    .login-page .container .detail-tab .title {
+      font-size: 22px;
+    }
+    .login-page .container .detail-tab .desc {
+      font-size: 16px;
+    }
+  
+    .login-page .container .form-container {
+      padding: 10px;
+    }
+    .login-page .container .form-container .submit-btn {
+      height: auto;
+      padding: 10px;
+    }
+    .layout .sidebar {
+      display: none;
+    }
+    .navbar .right-div button {
+      font-size: 12px;
+      padding: 5px;
+    }
+    .navbar .left-div {
+      gap: 10px;
+    }
+    .navbar .left-div .title {
+      font-size: 14px;
+    }
+    .navbar .left-div .desc {
+      font-size: 12px;
+    }
+  
+    .tabs-list {
+      border-bottom: none;
+    }
+    .tabs-list ul {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .tabs-list ul li {
+      width: 100%;
+    }
+    .tabs-list .eld-component {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .location-section {
+      flex-direction: column;
+    }
+    .geofences {
+      flex-direction: column;
+    }
+    .report-cards .card {
+      width: 100%;
+    }
+    .ifta-trips-detail {
+      flex-wrap: wrap;
+    }
+    .ifta-trips-detail .vehicle-list {
+      width: 100%;
+    }
+    .ifta-trips-detail .vehicle-list .title {
+      font-size: 25px;
+    }
+    .ifta-trips-detail .vehicle-list .desc {
+      font-size: 16px;
+    }
+    .ifta-trips-detail .remaining-list,
+    .ifta-trips-detail .remaining-list .alert {
+      width: 100%;
+    }
+    .ifta-trips-detail .remaining-list .filters {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .driver-actions-btn {
+      justify-content: flex-end;
+      width: 100%;
+      padding: 20px;
+    }
+  
+    /* ------ */
+    .flex-column {
+      flex-direction: column;
+    }
+    .full-width {
+      width: 100% !important;
+    }
+    .md-padding {
+      padding: 20px;
+    }
+    .zero-padding {
+      padding: 0;
+    }
+    .font-large {
+      font-size: 22px;
+    }
+    .font-medium {
+      font-size: 18px;
+    }
+    .font-small {
+      font-size: 16px;
+    }
+    .font-xs {
+      font-size: 14px;
+    }
+    .sm-padding {
+      padding: 10px;
+    }
+    .autoHeight {
+      height: auto;
+    }
+    .navbar .right-div .ham-menu {
+      display: block;
+    }
+    .flex-end{
+      justify-content: end;
+    }
+  }
+  

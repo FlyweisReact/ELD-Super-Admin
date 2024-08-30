@@ -79,7 +79,7 @@ const Drivers = () => {
           <div>
             {selectedTab === "Active" && (
               <div className="mt-5">
-                <table class="border ">
+                <table class="border">
                   <thead>
                     <tr className="bg-[#F0FAFB] h-[65px]  ">
                       <th className="w-[180px] flex items-center gap-2 justify-between pl-2 h-[65px]">

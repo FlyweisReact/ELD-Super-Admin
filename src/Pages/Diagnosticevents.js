@@ -36,7 +36,7 @@ const Diagnosticevents = () => {
             }`}
             onClick={() => setselectedTab("Active")}
           >
-            Active (2)
+            Active ({data?.data?.docs?.length})
           </div>
         </div>
       </div>

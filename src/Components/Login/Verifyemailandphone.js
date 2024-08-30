@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { IoArrowForward } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { postApi } from "../../Repository/Api";
-import { InputComponent, ButtonComponent } from "../HelpingComponent";
+import { InputComponent } from "../HelpingComponent";
 import endPoints from "../../Repository/apiConfig";
 import { ClipLoader } from "react-spinners";
 
