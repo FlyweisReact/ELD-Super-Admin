@@ -1,0 +1,17 @@
+Login Fuctionality working 
+search company details  dashboard
+
+Vehicles {
+    Active vehicle ,
+    Deactive ,
+    Create Truck ,
+    Remove Truck ,
+
+}
+
+
+
+-- api that are not working --
+Deactive vehicle not working 
+Active Vehicle 
+
