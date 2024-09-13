@@ -5,11 +5,11 @@ import Newsidebar from "../Components/Newsider";
 
 const LayoutSuper = () => {
   return (
-    <div className="flex">
-      <div className="">
+    <div className="layout">
+      <div className="sidebar">
         <Newsidebar />
       </div>
-      <div className="w-[100%]">
+      <div className="w-[100%] main-component">
         <Header />
         <div className="w-[100%]">
           <Outlet />

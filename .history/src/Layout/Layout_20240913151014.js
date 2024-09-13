@@ -1,0 +1,20 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+import SuperSidebar from "../Components/SuperSidebar";
+
+const Layout = () => {
+  return (
+    <div className="flex">
+      <div className="">
+        <SuperSidebar />
+      </div>
+      <div className="w-[100%]">
+        <div className="w-[100%]">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

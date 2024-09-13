@@ -49,14 +49,8 @@ const Cards = ({ title, count, link, onClickEvent }) => {
 };
 
 const Home = () => {
-  const [trucks, setTrucks] = useState({});
   const [open, setOpen] = useState(false);
   const [company, setCompany] = useState({
-    data: {
-      totalDocs: 0,
-    },
-  });
-  const [drivers, setDrivers] = useState({
     data: {
       totalDocs: 0,
     },
@@ -69,12 +63,6 @@ const Home = () => {
   };
 
   useEffect(() => {
-    getApi(endPoints.truck.getAllTrucks, {
-      setResponse: setTrucks,
-    });
-    getApi(endPoints.driver.getAll({}), {
-      setResponse: setDrivers,
-    });
     fetchCompany();
   }, []);
 
@@ -98,44 +86,19 @@ const Home = () => {
         <div>
           <div className="mt-20 flex flex-col  lg:flex-row justify-between gap-5 mx-4">
             <Cards
-              title={"# TRUCKS"}
-              count={trucks?.data?.totalDocs}
-              link={"/vehicles"}
-            />
-            <Cards
-              title={"# DRIVERS"}
-              count={drivers.data.totalDocs}
-              link={"/Drivers"}
+              title={"# COMPANIES"}
+              count={company.data.totalDocs}
+              link={"/super-logbook"}
             />
             <Cards
               title={"# COMPANIES"}
               count={company.data.totalDocs}
               link={"/super-logbook"}
             />
-          </div>
-
-          <div className="mt-20 flex flex-col lg:flex-row justify-center gap-5 mx-4">
             <Cards
               title={"# ADD NEW COMPANY"}
               onClickEvent={() => setOpen(true)}
             />
-
-            <div className=" basis-1/3 shadow shadow-white bg-[#FFF5F5] rounded-lg px-6 py-3 w-full">
-              <div className="flex justify-between">
-                <img src="../Group 357.png" alt="" className="h-fit" />
-                <span className="text-center font-bold text-[#EB5757]">
-                  # DELETE COMPANY
-                </span>
-                <p></p>
-              </div>
-              <div className="flex justify-center items-center mt-10 mb-6">
-                <div className="rounded-full w-[180px] h-[180px] bg-white flex justify-center items-center ">
-                  <p className="bg-[#FFF5F5] w-[100px] h-[100px] rounded-full flex justify-center items-center text-[40px] text-[#1FADEA] font-bold">
-                    <img src="../gravity-ui_trash-bin.png" alt="" />
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

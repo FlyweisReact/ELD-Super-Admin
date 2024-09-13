@@ -52,6 +52,16 @@ Terminal {
     Unassign Terminal in driver
 }
 
+--- 13 sept
+Compaines {
+    all companies ,
+}
+Alert {
+    get all
+}
+Diagnostic and Malfunction Events {
+    get all
+}
 
 -- api that are not working --
 

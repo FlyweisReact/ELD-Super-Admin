@@ -16,7 +16,7 @@ const Dashboard = () => {
   const navigate = useNavigate("");
 
   useEffect(() => {
-    getApi(endPoints.company.getById(id), {
+    getApi(endPoints.companies.getDetail(id), {
       setResponse: setData,
     });
   }, [id]);
@@ -25,7 +25,7 @@ const Dashboard = () => {
     <div className="bg-[#F9FBFF] p-5  h-[400px]">
       <div className="flex justify-between">
         <div className="semi-bold text-[28px]">
-          Welcome back, Company {data?.data?.name}!
+          Welcome back, {data?.data?.owner}
         </div>
         <div className="w-[120px] flex justify-center items-center gap-2 h-[40px] border-[#EB5757] font-semibold border text-[#EB5757] rounded-3xl bg-[#FDEEEE]">
           <img src={livebtn} alt="" className="w-[24px] h-[24px]" />

@@ -1,106 +1,74 @@
 /** @format */
 
 import { Sidebar } from "flowbite-react";
-import { ReactComponent as logbook } from "../Assets/Sidebar/logbook.svg";
-import { ReactComponent as report } from "../Assets/Sidebar/report.svg";
-import { ReactComponent as ifta } from "../Assets/Sidebar/ifta.svg";
 import { ReactComponent as Devices } from "../Assets/Sidebar/devices.svg";
-import { ReactComponent as fmcsa } from "../Assets/Sidebar/fmcsa.svg";
 import { ReactComponent as logOut } from "../Assets/Sidebar/logout.svg";
-import { HiMenuAlt3 } from "react-icons/hi";
+import { ReactComponent as Layer } from "../Assets/Sidebar/layer.svg";
+import { ReactComponent as CompanySvg } from "../Assets/Sidebar/company.svg";
+import { ReactComponent as AdminSvg } from "../Assets/Sidebar/admin.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { LogOutHandler } from "../utils/utils";
+import logo from "../Assets/logo.png";
 
 const SuperSidebar = () => {
-  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
-
   return (
     <Sidebar
       aria-label="Sidebar with multi-level dropdown example"
-      className={`bg-[#F9FBFF] h-[1500px] ${
-        open ? "w-64 " : "w-24"
-      } duration-500 text-gray-100 px-4`}
+      className={`bg-[#F9FBFF] h-[1500px] duration-500 text-gray-100 px-4`}
     >
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <div className="py-3 flex justify-between">
-            {!open ? (
-              <HiMenuAlt3
-                size={26}
-                style={{ color: "#34B7C1" }}
-                className="cursor-pointer"
-                onClick={() => setOpen(!open)}
+          <div className="siderbar-container">
+            <div className="sibebar-logo-container">
+              <img
+                src={logo}
+                alt=""
+                className="sidebar-logo-img"
+                onClick={() => navigate("/home")}
               />
-            ) : (
-              <>
-                <Sidebar.Item
-                  to="#"
-                  className="text-[#34B7C1] text-center text-3xl font-bold"
-                >
-                  Dashboard
-                </Sidebar.Item>
-              </>
-            )}
+            </div>
           </div>
-          <>
-            <Link to="/super-logbook">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2 hover:text-[#34B7C1]"
-                icon={logbook}
-              >
-                Logbook
-              </Sidebar.Item>
-            </Link>
-            <Link to="/Reports">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1]"
-                icon={report}
-              >
-                Reports
-              </Sidebar.Item>
-            </Link>
-            <Link to="/Iftatrips">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1]"
-                icon={ifta}
-              >
-                IFTA
-              </Sidebar.Item>
-            </Link>
-            <Link to="/sub-admin">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1]"
-                icon={Devices}
-              >
-                Sub admin
-              </Sidebar.Item>
-            </Link>
-            <Link to="/subscription">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1]"
-                icon={Devices}
-              >
-                Subscription
-              </Sidebar.Item>
-            </Link>
-            <Link to="/Apisharing">
-              <Sidebar.Item
-                className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1]"
-                icon={fmcsa}
-              >
-                FMCSA
-              </Sidebar.Item>
-            </Link>
+          <Link to="/home">
             <Sidebar.Item
-              className="bg-white text-[#80848F] text-[18px] p-2 mb-2  hover:text-[#34B7C1] cursor-pointer"
-              icon={logOut}
-              onClick={() => LogOutHandler(navigate)}
+              className="bg-white text-[#80848F] text-[16px]  p-2 mb-2  hover:text-[#34B7C1]"
+              icon={Layer}
             >
-              Log-out
+              Home
             </Sidebar.Item>
-          </>
+          </Link>
+          <Link to="/companies">
+            <Sidebar.Item
+              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+              icon={CompanySvg}
+            >
+              Companies
+            </Sidebar.Item>
+          </Link>
+          <Link to="/sub-admin">
+            <Sidebar.Item
+              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+              icon={AdminSvg}
+            >
+              Sub admin
+            </Sidebar.Item>
+          </Link>
+          <Link to="/subscription">
+            <Sidebar.Item
+              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+              icon={Devices}
+            >
+              Subscription
+            </Sidebar.Item>
+          </Link>
+
+          <Sidebar.Item
+            className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1] cursor-pointer"
+            icon={logOut}
+            onClick={() => LogOutHandler(navigate)}
+          >
+            Log-out
+          </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

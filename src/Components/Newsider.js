@@ -14,20 +14,15 @@ import { ReactComponent as testimonial } from "../Assets/Sidebar/testimonial.svg
 import { ReactComponent as alert } from "../Assets/Sidebar/alert.svg";
 import { ReactComponent as fmcsa } from "../Assets/Sidebar/fmcsa.svg";
 import { ReactComponent as diagonos } from "../Assets/Sidebar/diagonos.svg";
-import { HiMenuAlt3 } from "react-icons/hi";
+import { HiMenuAlt3, HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../Assets/logo.png";
+import { twMerge } from "tailwind-merge";
 
 const Newsidebar = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
-  const [openLocation, setOpenLocation] = useState(false);
-  const [openIfta, setOpenIfta] = useState(false);
-  const [openDrivers, setOpenDrivers] = useState(false);
-  const [openVehicles, setOpenVehicles] = useState(false);
-  const [openDevices, setOpenDevices] = useState(false);
- 
   return (
     <Sidebar
       aria-label="Sidebar with multi-level dropdown example"
@@ -60,7 +55,7 @@ const Newsidebar = () => {
                     src={logo}
                     alt=""
                     className="sidebar-logo-img"
-                    onClick={() => navigate("/Logbook")}
+                    onClick={() => navigate("/home")}
                   />
                 </div>
               </div>
@@ -73,22 +68,31 @@ const Newsidebar = () => {
                 <Sidebar.Item icon={logbook}>Logbook</Sidebar.Item>
               </Link>
               <Link to="/location">
-                <Sidebar.Item
-                  onClick={() => setOpenLocation(!openLocation)}
+                <Sidebar.Collapse
                   icon={location}
+                  label="Location"
+                  renderChevronIcon={(theme, open) => {
+                    const IconComponent = open
+                      ? HiOutlineMinusSm
+                      : HiOutlinePlusSm;
+
+                    return (
+                      <IconComponent
+                        aria-hidden
+                        className={twMerge(
+                          theme.label.icon.open[open ? "on" : "off"]
+                        )}
+                      />
+                    );
+                  }}
                 >
-                  Location
-                </Sidebar.Item>
-                {openLocation && (
-                  <>
-                    <Link to="/Trackinglinks">
-                      <Sidebar.Item>Traking Links</Sidebar.Item>
-                    </Link>
-                    <Link to="/Geofences">
-                      <Sidebar.Item>Geofences</Sidebar.Item>
-                    </Link>
-                  </>
-                )}
+                  <Link to="/Trackinglinks">
+                    <Sidebar.Item>Traking Links</Sidebar.Item>
+                  </Link>
+                  <Link to="/Geofences">
+                    <Sidebar.Item>Geofences</Sidebar.Item>
+                  </Link>
+                </Sidebar.Collapse>
               </Link>
               <Link to="/Dashcams">
                 <Sidebar.Item icon={dascams}>Dashcams</Sidebar.Item>
@@ -96,58 +100,77 @@ const Newsidebar = () => {
               <Link to="/Reports">
                 <Sidebar.Item icon={report}>Reports</Sidebar.Item>
               </Link>
-              <Link to="/Iftatrips">
-                <Sidebar.Item
-                  onClick={() => setOpenIfta(!openIfta)}
-                  icon={ifta}
-                >
-                  IFTA
-                </Sidebar.Item>
-              </Link>
-              {openIfta && (
-                <>
-                  <Link to="/Iftatrips">
-                    <Sidebar.Item>IFTA Trips</Sidebar.Item>
-                  </Link>
-                  <Link to="/Iftareports">
-                    <Sidebar.Item>IFTA Reports</Sidebar.Item>
-                  </Link>
-                </>
-              )}
-              <Link to={`/vehicles`}>
-                <Sidebar.Item
-                  onClick={() => setOpenVehicles(!openVehicles)}
+              <Sidebar.Collapse
+                icon={ifta}
+                label="IFTA"
+                renderChevronIcon={(theme, open) => {
+                  const IconComponent = open
+                    ? HiOutlineMinusSm
+                    : HiOutlinePlusSm;
+
+                  return (
+                    <IconComponent
+                      aria-hidden
+                      className={twMerge(
+                        theme.label.icon.open[open ? "on" : "off"]
+                      )}
+                    />
+                  );
+                }}
+              >
+                <Link to="/Iftatrips">
+                  <Sidebar.Item>IFTA Trips</Sidebar.Item>
+                </Link>
+                <Link to="/Iftareports">
+                  <Sidebar.Item>IFTA Reports</Sidebar.Item>
+                </Link>
+              </Sidebar.Collapse>
+              <Link to="/vehicles">
+                <Sidebar.Collapse
                   icon={vehicles}
+                  label="Vehicles"
+                  renderChevronIcon={(theme, open) => {
+                    const IconComponent = open
+                      ? HiOutlineMinusSm
+                      : HiOutlinePlusSm;
+
+                    return (
+                      <IconComponent
+                        aria-hidden
+                        className={twMerge(
+                          theme.label.icon.open[open ? "on" : "off"]
+                        )}
+                      />
+                    );
+                  }}
                 >
-                  Vehicles
-                </Sidebar.Item>
-              </Link>
-              {openVehicles && (
-                <>
                   <Link to="/Vehicles/trailers">
                     <Sidebar.Item>Trailers</Sidebar.Item>
                   </Link>
-                </>
-              )}
+                </Sidebar.Collapse>
+              </Link>
               <Link to="/Drivers">
-                <Sidebar.Item
-                  onClick={() => setOpenDrivers(!openDrivers)}
-                  icon={drivers}
-                >
-                  Drivers
-                </Sidebar.Item>
+                <Sidebar.Item icon={drivers}>Drivers</Sidebar.Item>
               </Link>
-
               <Link to="/Devices">
-                <Sidebar.Item
-                  onClick={() => setOpenDevices(!openDevices)}
+                <Sidebar.Collapse
                   icon={Devices}
+                  label="Devices"
+                  renderChevronIcon={(theme, open) => {
+                    const IconComponent = open
+                      ? HiOutlineMinusSm
+                      : HiOutlinePlusSm;
+
+                    return (
+                      <IconComponent
+                        aria-hidden
+                        className={twMerge(
+                          theme.label.icon.open[open ? "on" : "off"]
+                        )}
+                      />
+                    );
+                  }}
                 >
-                  Devices
-                </Sidebar.Item>
-              </Link>
-              {openDevices && (
-                <>
                   <Link to="/Devices/TrackingDevices">
                     <Sidebar.Item>Tracking Devices</Sidebar.Item>
                   </Link>
@@ -157,8 +180,8 @@ const Newsidebar = () => {
                   <Link to="/Devices/DashcamDevices">
                     <Sidebar.Item>Dashcam Devices</Sidebar.Item>
                   </Link>
-                </>
-              )}
+                </Sidebar.Collapse>
+              </Link>
               <Link to="/Userroles">
                 <Sidebar.Item icon={userrole}>User Roles</Sidebar.Item>
               </Link>
@@ -169,9 +192,7 @@ const Newsidebar = () => {
                 <Sidebar.Item icon={alert}>Alerts</Sidebar.Item>
               </Link>
               <Link to="/Diagnosticevents">
-                <Sidebar.Item icon={diagonos}>
-                  Diagnostic & <br /> Malfunction Events
-                </Sidebar.Item>
+                <Sidebar.Item icon={diagonos}>Diagnostic</Sidebar.Item>
               </Link>
               <Link to="/Apisharing">
                 <Sidebar.Item icon={fmcsa}>FMCSA</Sidebar.Item>
@@ -185,7 +206,6 @@ const Newsidebar = () => {
               <Link to="/location">
                 <Sidebar.Item icon={location}></Sidebar.Item>
               </Link>
-
               <Link to="/Dashcams">
                 <Sidebar.Item icon={dascams}></Sidebar.Item>
               </Link>
