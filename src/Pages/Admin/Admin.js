@@ -66,7 +66,6 @@ const Admin = () => {
         thead={thead}
         tbody={tbody}
       />
-            
     </div>
   );
 };

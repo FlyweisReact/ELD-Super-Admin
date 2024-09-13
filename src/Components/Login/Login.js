@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoArrowForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import { postApi } from "../../Repository/Api";
@@ -26,6 +26,14 @@ const Login = () => {
     const token = res?.accessToken;
     localStorage.setItem("user-token", token);
   };
+
+  const token = localStorage.getItem("user-token");
+
+  useEffect(() => {
+    if (token) {
+      navigate("/home");
+    }
+  }, [token]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -75,7 +83,7 @@ const Login = () => {
                   required
                   type={inputType ? "password" : "text"}
                 />
-              
+
                 {inputType ? (
                   <i
                     className="fa-solid fa-eye-slash absolute top-5 right-4 cursor-pointer"
