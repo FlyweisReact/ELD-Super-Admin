@@ -101,8 +101,7 @@ Sub-Admin {
     get All 
 }
 
-add sub-admin funcationality to see only permitted tabs 
-Lucky@gmail.com , 1
+add sub-admin funcationality to see only 
 
 -- api that are not working --
 

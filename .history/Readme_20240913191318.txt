@@ -90,19 +90,8 @@ Dashboard {
     all users,
     add new company
 }
-Company {
-    delete ,
-    create new
-}
-Sub-Admin {
-    Create , 
-    Update , 
-    Delete ,
-    get All 
-}
+made company page 
 
-add sub-admin funcationality to see only permitted tabs 
-Lucky@gmail.com , 1
 
 -- api that are not working --
 

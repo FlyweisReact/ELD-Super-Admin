@@ -91,11 +91,11 @@ const endPoints = {
       `api/v1/admin/Truck/updateTruckLiabilityInsurance/${id}`,
     updateVehicleImage: (id) => `api/v1/admin/Truck/updateTruckImage/${id}`,
     getActiveDtc: ({ truck = "", page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allTruckActiveDtcCode?truck=${truck}&page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/Truck/allTruckActiveDtcCode?truck=${truck}&page=${page}&limit=${limit}&company=${companyId}`,
     getActiveVehicle: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allTruck?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/Truck/allTruck?page=${page}&limit=${limit}&company=${companyId}`,
     deactiveVehicles: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allInActiveTruck?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/Truck/allInActiveTruck?page=${page}&limit=${limit}&company=${companyId}`,
     removeVehicle: (id) => `api/v1/admin/Truck/deleteTruck/${id}`,
     createVehicle: "api/v1/admin/Truck/addTruck",
     editVehicleDetails: (id) => `api/v1/admin/Truck/updateTruckDetails/${id}`,
@@ -103,12 +103,12 @@ const endPoints = {
   },
   drivers: {
     getAllDrivers: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/allDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/allDriver?page=${page}&limit=${limit}&company=${companyId}`,
     updateDriverStatus: "api/v1/admin/Truck/updateDriverStatus",
     allInactiveDriver: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/allInActiveDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/allInActiveDriver?page=${page}&limit=${limit}&company=${companyId}`,
     allDeletedDriver: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/allDeleteDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/allDeleteDriver?page=${page}&limit=${limit}&company=${companyId}`,
     removeDriver: (id) => `api/v1/admin/deleteUser/${id}`,
     createDriver: "api/v1/admin/createDriver",
     unassignTruck: (id) => `api/v1/admin/removeTruckFromDriverProfile/${id}`,
@@ -118,11 +118,11 @@ const endPoints = {
   },
   devices: {
     getDevices: ({ driver = "", status = "", page = 1, limit = 10 }) =>
-      `api/v1/admin/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}&company=${companyId}`,
   },
   users: {
     getUser: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/AllUser?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/AllUser?page=${page}&limit=${limit}&company=${companyId}`,
     getDeactivatedUser: ({
       query = "",
       dutyStatus = "",

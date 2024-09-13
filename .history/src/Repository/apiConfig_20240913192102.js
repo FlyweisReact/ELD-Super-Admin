@@ -91,7 +91,7 @@ const endPoints = {
       `api/v1/admin/Truck/updateTruckLiabilityInsurance/${id}`,
     updateVehicleImage: (id) => `api/v1/admin/Truck/updateTruckImage/${id}`,
     getActiveDtc: ({ truck = "", page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allTruckActiveDtcCode?truck=${truck}&page=${page}&limit=${limit}&company=${getCompanyId()}`,
+      `api/v1/admin/Truck/allTruckActiveDtcCode?truck=${truck}&page=${page}&limit=${limit}&company=${companyId}`,
     getActiveVehicle: ({ page = 1, limit = 10 }) =>
       `api/v1/admin/Truck/allTruck?page=${page}&limit=${limit}&company=${getCompanyId()}`,
     deactiveVehicles: ({ page = 1, limit = 10 }) =>

@@ -1,7 +1,7 @@
 
 const getCompanyId = () => {
   const companyId = localStorage.getItem("companyId");
-  return companyId ? companyId : "";
+  return companyId ? getCompanyId() : "";
 };
 
 

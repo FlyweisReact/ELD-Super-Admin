@@ -102,7 +102,7 @@ Sub-Admin {
 }
 
 add sub-admin funcationality to see only permitted tabs 
-Lucky@gmail.com , 1
+lucky@gmail.com , 1
 
 -- api that are not working --
 

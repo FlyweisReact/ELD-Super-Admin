@@ -95,14 +95,9 @@ Company {
     create new
 }
 Sub-Admin {
-    Create , 
-    Update , 
-    Delete ,
-    get All 
+    
 }
 
-add sub-admin funcationality to see only permitted tabs 
-Lucky@gmail.com , 1
 
 -- api that are not working --
 
