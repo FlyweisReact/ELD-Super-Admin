@@ -1,0 +1,117 @@
+/** @format */
+
+.log_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid rgb(201, 209, 232);
+}
+.log_header .btn_container {
+  display: flex;
+  gap: 20px;
+}
+
+.drop_content {
+  padding: 20px;
+  background-color: #f3f5fb;
+}
+
+.drop_content .content {
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.all_fields {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-content: space-between;
+  width: 80%;
+}
+.signature_btn {
+  width: 20%;
+}
+.chart {
+  width: 70%;
+}
+.chart_container {
+  width: 100%;
+  position: relative;
+  padding: 0 20px;
+}
+
+.date_handler .go_back {
+  position: absolute;
+  top: 45%;
+  transform: translate(-50%);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: #fff;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  left: 0;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.date_handler .go_forward {
+  position: absolute;
+  top: 45%;
+  transform: translate(-50%);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: #fff;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  right: 0;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.recap_div {
+  background-color: #e8f4ff;
+  border: 1px solid rgb(201, 209, 232);
+  border-radius: 10px;
+}
+.desc {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .log_header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .log_header .btn_container {
+    flex-wrap: wrap;
+  }
+  .content {
+    flex-wrap: wrap;
+  }
+  .all_fields {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .all_fields div {
+    width: 100%;
+  }
+  .chart {
+    width: 100%;
+  }
+  .recap_div {
+    width: 100%;
+  }
+}

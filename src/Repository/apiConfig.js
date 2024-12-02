@@ -1,9 +1,9 @@
+/** @format */
 
 const getCompanyId = () => {
   const companyId = localStorage.getItem("companyId");
   return companyId ? companyId : "";
 };
-
 
 const endPoints = {
   auth: {
@@ -11,6 +11,7 @@ const endPoints = {
     forgetPassword: "api/v1/auth/forgetPassword",
     verifyOtp: (id) => `api/v1/auth/forgotVerifyotp/${id}`,
     changePassword: (id) => `api/v1/auth/changePassword/${id}`,
+    getProfile: "api/v1/corporate/getProfile",
   },
   user: {
     getUsers: ({
@@ -52,7 +53,6 @@ const endPoints = {
       `api/v1/admin/Truck/deleteDriversFromTerminal/${id}?arrayId=${arrayId}`,
     remove: (id) => `api/v1/admin/deleteTerminal/${id}`,
   },
-
   eldDevice: {
     getAll: ({ driver = "", status = "", page = 1, limit = 10 }) =>
       `api/v1/admin/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}`,
@@ -115,6 +115,8 @@ const endPoints = {
     updateDriver: (id) => `api/v1/admin/updateDriver/${id}`,
     updateDriverSetting: (id) => `api/v1/admin/updateDriverSetting/${id}`,
     getDriverDetail: (id) => `api/v1/admin/getUser/${id}`,
+    getDriversList: ({ page = 1, limit = 10 }) =>
+      `api/v1/admin/getAllDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
   },
   devices: {
     getDevices: ({ driver = "", status = "", page = 1, limit = 10 }) =>
@@ -174,6 +176,16 @@ const endPoints = {
   },
   dashboard: {
     get: "api/v1/auth/dashboard",
+  },
+  logbook: {
+    getLogbookByDriver: (id, date) =>
+      `api/v1/admin/AllElogForm?driver=${id}&date=${date}&company=${getCompanyId()}`,
+    getDriverLoogbook: ({ id, date }) =>
+      `api/v1/user/getDriverLogByDriverId?driver=${id}&date=${date}&limit=1000`,
+    updateLogbook: (id) => `api/v1/user/updateDriverLog/${id}`,
+    getRecap: (id) =>
+      `api/v1/user/getAllDriverLogFromCurrentMonthByDriverId/${id}`,
+    editLog: (id) => `api/v1/user/updateElogForm/${id}`,
   },
 };
 

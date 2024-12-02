@@ -63,6 +63,7 @@ import TripHistory from "./Pages/Reports/TripHistory";
 import DriveTime from "./Pages/Reports/DriveTime";
 import Utilization from "./Pages/Reports/Utilization";
 import ReportHistory from "./Pages/Reports/ReportHistory";
+import Chat from "./Pages/Chat/Chat.js";
 
 const router = createBrowserRouter([
   {
@@ -188,6 +189,10 @@ const router = createBrowserRouter([
       {
         path: "/reports/report-history",
         element: <ReportHistory />,
+      },
+      {
+        path: "/chat",
+        element: <Chat />,
       },
     ],
   },

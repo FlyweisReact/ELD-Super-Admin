@@ -61,6 +61,7 @@ const apiRequest = async (method, url, payload = null, options = {}) => {
     );
   } catch (error) {
     handleError(error, errorMsg);
+    if (setResponse) setResponse();
   } finally {
     if (setLoading) setLoading(false);
   }

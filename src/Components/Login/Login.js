@@ -7,6 +7,7 @@ import { postApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import ClipLoader from "react-spinners/ClipLoader";
 import { InputComponent } from "../HelpingComponent";
+import { SignInWithFirebase } from "../../utils/utils";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,7 +39,11 @@ const Login = () => {
     e.preventDefault();
     postApi(endPoints.auth.login, payload, {
       successMsg: "Welcome Back !",
-      additionalFunctions: [(res) => tokenSaver(res), () => navigate("/home")],
+      additionalFunctions: [
+        () => SignInWithFirebase({ payload }),
+        (res) => tokenSaver(res),
+        () => navigate("/home"),
+      ],
       setLoading,
     });
   };
@@ -80,6 +85,7 @@ const Login = () => {
                   onChangeEvent={(e) => setPassword(e.target.value)}
                   value={password}
                   required
+                  minLength={6}
                   type={inputType ? "password" : "text"}
                 />
 

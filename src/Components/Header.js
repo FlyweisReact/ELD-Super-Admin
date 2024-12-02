@@ -8,6 +8,8 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
 import { returnFullName } from "../utils/utils";
+import { IoChatbox } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -58,6 +60,13 @@ const Header = () => {
               <span className="desc"> {data?.data?.email} </span>
             </div>
           </div>
+
+          <Link to="/chat">
+            <IoChatbox
+              size={25}
+              style={{ color: "#00A884", cursor: "pointer" }}
+            />
+          </Link>
         </div>
       </section>
     </>

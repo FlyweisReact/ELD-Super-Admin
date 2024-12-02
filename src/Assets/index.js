@@ -13,6 +13,10 @@ import testimonialSvg from "./Sidebar/testimonial.svg";
 import alertSvg from "./Sidebar/alert.svg";
 import fmscaSvg from "./Sidebar/fmcsa.svg";
 import diagnosSvg from "./Sidebar/diagonos.svg";
+import attachment_icon from './attachment.png'
+import default_user_avatar from './default-avatar.jpg'
+import emoji_icon from './emoji.png'
+
 
 export {
   logo,
@@ -29,4 +33,7 @@ export {
   alertSvg,
   fmscaSvg,
   diagnosSvg,
+  attachment_icon,
+  default_user_avatar,
+  emoji_icon
 };
