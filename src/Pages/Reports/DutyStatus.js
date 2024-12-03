@@ -1,14 +1,31 @@
 /** @format */
 
-import React, { useState } from "react";
-import { AlertDateSelector, EditThreshold } from "../../Components/Modals/Modals";
+import React, { useEffect, useState } from "react";
+import {
+  AlertDateSelector,
+  EditThreshold,
+} from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
+import { returnFullName } from "../../utils/utils";
 
 const DutyStatus = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi(endPoints.logbook.allCompanyLog, {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -23,20 +40,18 @@ const DutyStatus = () => {
     "Sleeper Berth",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Abdul Muqeet",
-      "15h 39m",
-      "451 ml",
-      0,
-      "3h 12m",
-      0,
-      0,
-      "106h 3m",
-      "26h 52m",
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    i?.workedToday,
+    i?.milesDriven,
+    "---",
+    i?.workedToday,
+    "---",
+    i?.distance,
+    "---",
+    "---",
+  ]);
 
   const value = 100;
 

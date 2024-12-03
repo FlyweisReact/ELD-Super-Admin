@@ -1,9 +1,11 @@
 /** @format */
 
-import React, { useState } from "react";
-import { AlertDateSelector, EditThreshold } from "../../Components/Modals/Modals";
+import React, { useEffect, useState } from "react";
+import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { Dropdown } from "antd";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
 
 const items = [
   {
@@ -14,7 +16,17 @@ const items = [
 
 const ExternalBattery = () => {
   const [open, setOpen] = useState(false);
-  const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi(endPoints.logbook.allCompanyLog, {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -30,11 +42,15 @@ const ExternalBattery = () => {
     "Min Charge",
   ];
 
+  const tbody = data?.data?.docs?.map((i) => [
+    i?.truck?.vehicleNumber,
+    i?.truck?.vehicleType,
+  ]);
+
+
   return (
     <section className="dormancy-report-page p-5">
-       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
-      <EditThreshold show={show} handleClose={() => setShow(false)} />
-
+      <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
       <div className="report-btn-container">
         <div className="relative" onClick={() => setOpen(true)}>
           <input
@@ -61,7 +77,7 @@ const ExternalBattery = () => {
 
       <hr className="mt-5 mb-5" />
 
-      <TableLayout thead={thead} className="vehicle-table mt-5" />
+      <TableLayout thead={thead} className="vehicle-table mt-5" tbody={tbody} />
     </section>
   );
 };

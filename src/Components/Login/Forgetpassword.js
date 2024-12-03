@@ -29,7 +29,6 @@ const Forgetpassword = () => {
 
     const showOtp = (res) => {
       setId(res?.data?._id);
-      console.log(res);
       showMsg("", res?.data?.otp, "success");
     };
 

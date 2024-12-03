@@ -1,12 +1,15 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
 import { Tabs } from "../../Components/HelpingComponent";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
+import { returnFullName } from "../../utils/utils";
 
 const items = [
   {
@@ -53,6 +56,31 @@ const salesData = [
 const TripHistory = () => {
   const [open, setOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Drivers");
+  const [data, setData] = useState(null);
+  const [vehicleLog, setVehicleLog] = useState(null);
+  const [avgReport, setAvgReport] = useState(null);
+
+  const fetchHandler = () => {
+    getApi(endPoints.logbook.allCompanyLog, {
+      setResponse: setData,
+    });
+  };
+
+  const fetchLog = () => {
+    getApi(endPoints.logbook.tripHistory, {
+      setResponse: setVehicleLog,
+    });
+    getApi(endPoints.logbook.tripAvg, {
+      setResponse: setAvgReport,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+    fetchLog();
+  }, []);
+
+  console.log(avgReport?.data);
 
   const tempSeries = [
     {
@@ -85,19 +113,17 @@ const TripHistory = () => {
     "Safety Events",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Farhan Raja",
-      5,
-      "17h 47m",
-      "508 ml",
-      "52.22 mph",
-      "0",
-      "0.0%",
-      "2",
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    "---",
+    i?.workedToday,
+    i?.distance,
+    "---",
+    i?.eldFuelRecord?.[0]?.idleTimeHours,
+    "---",
+    "---",
+  ]);
 
   const tabsOptions = [
     {
@@ -151,20 +177,18 @@ const TripHistory = () => {
     "Safety Events",
   ];
 
-  const vehicleBody = [
-    [
-      <input type="checkbox" className="checkbx" />,
-      78616,
-      "TRUCK",
-      12,
-      "23h 17m",
-      "539 mi",
-      "51.89 mph",
-      "0",
-      "0%",
-      0,
-    ],
-  ];
+  const vehicleBody = vehicleLog?.data?.docs?.map((i) => [
+    <input type="checkbox" className="checkbx" />,
+    i?.vehicleNumber,
+    i?.vehicleType,
+    i?.totalTrip,
+    i?.totalDriveTime,
+    i?.totalDistance,
+    i?.averageSpeed,
+    i?.idleTime,
+    `${i?.idling}%`,
+    i?.safetyEvents,
+  ]);
 
   return (
     <section className="p-5">
@@ -180,21 +204,24 @@ const TripHistory = () => {
         <div className="my-chart">
           <div className="flex-container">
             <div style={{ width: 200, height: 200 }}>
-              <CircularProgressbar value={5} text={"5"} />
+              <CircularProgressbar
+                value={avgReport?.data?.totalTrip || 0}
+                text={`${avgReport?.data?.totalTrip || 0}`}
+              />
             </div>
 
             <div className="flex-box">
               <div className="items">
                 <p className="faded">Total Trips</p>
-                <p className="bold">39</p>
+                <p className="bold"> {avgReport?.data?.totalTrip} </p>
               </div>
               <div className="items">
                 <p className="faded">Avg. Trip Distance</p>
-                <p className="bold">133.67 mi</p>
+                <p className="bold"> {avgReport?.data?.totalDistance} mi</p>
               </div>
               <div className="items">
                 <p className="faded">Avg. Trip Duration</p>
-                <p className="bold">2h 59m</p>
+                <p className="bold">{avgReport?.data?.averageDuration}</p>
               </div>
             </div>
           </div>

@@ -28,7 +28,7 @@ const Companies = () => {
 
   const CompanyDetailSaver = (id) => {
     localStorage.setItem("companyId", id);
-    navigate(`/Dashboard/${id}`);
+    navigate(`/Logbook`);
   };
 
   const removeHandler = (id) => {

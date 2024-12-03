@@ -14,7 +14,7 @@ function AutocompleteSearch() {
 
   const CompanyDetailSaver = (id) => {
     localStorage.setItem("companyId", id);
-    navigate(`/Dashboard/${id}`);
+    navigate(`/Logbook`);
   };
 
   const fetchCompanyListing = useCallback(() => {

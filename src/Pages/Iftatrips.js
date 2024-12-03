@@ -19,7 +19,7 @@ const Iftatrips = () => {
           logbook app while driving
         </div>
       </div>
-      <div className="flex gap-4 mt-5">
+      <div className="flex gap-4 mt-5 ifta-trips-detail">
         <div className="w-[350px] h-[500px] bg-white rounded-lg box-shadow p-5">
           <div className="text-[28px] font-semibold text-left">Vehicles</div>
           <div className="text-[#858B9A] text-[20px] text-left">

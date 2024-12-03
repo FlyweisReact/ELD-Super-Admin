@@ -1,39 +1,56 @@
 /** @format */
 
-import React, { useState } from "react";
-import { AlertDateSelector, EditThreshold } from "../../Components/Modals/Modals";
+import React, { useEffect, useState } from "react";
+import {
+  AlertDateSelector,
+  EditThreshold,
+} from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, PieChart } from "../../Components/ApexCharts/Charts";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
+import { returnFullName } from "../../utils/utils";
 
 const LogHistory = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi(endPoints.logbook.allCompanyLog, {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const pieSeries = [100];
-  const pieLabel = ["Approved" , "Rejected" , "Canceled" , "Pending"];
+  const pieLabel = ["Approved", "Rejected", "Canceled", "Pending"];
 
   const thead = [
     <input type={"checkbox"} />,
     "Driver Name",
-    "Miles Driven" ,
-    "Avg Edits/1000 mi" ,
-    "Approved Edits" ,
-    "Pending Edits" ,
-    "Rejected Edits" ,
-    "Cancelled Edits"
+    "Miles Driven",
+    "Avg Edits/1000 mi",
+    "Approved Edits",
+    "Pending Edits",
+    "Rejected Edits",
+    "Cancelled Edits",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Abdul Muqeet",
-      '451 mi',
-      2.2 ,
-      1,
-      0 ,0 ,0
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    i?.milesDriven,
+    "---",
+    "---",
+    "---",
+    "---",
+    "---",
+  ]);
 
   const value = 99.17;
 
@@ -59,7 +76,6 @@ const LogHistory = () => {
     <section className="dormancy-report-page p-5">
       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
       <EditThreshold show={show} handleClose={() => setShow(false)} />
-
       <div className="full-width">
         <div>
           <div className="relative" onClick={() => setOpen(true)}>

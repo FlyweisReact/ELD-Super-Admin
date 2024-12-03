@@ -1,85 +1,72 @@
 import React, { useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 const DateFilter = () => {
-  const [value, onChange] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   return (
-    <div>
-      <div className="flex justify-between gap-3 mb-2">
-        <div className="relative">
-          <input
-            type="text"
-            className="h-[45px] w-[150px] pl-9 border border-[#8E8F8F] rounded-lg p-2 "
-            style={{ color: "#8E8F8F" }}
-            placeholder="Apr 03,2022"
-          />
-          <img
-            src="../Vector (11).png"
-            alt=""
-            className="absolute top-3 left-2"
-          />
+    <div className="alert-date-filter">
+      <div className="input-groups">
+        <div className="date">
+          <i className="fa-solid fa-calendar-days"></i>
+          <span>Aug 01, 2024</span>
+          <i className="fa-solid fa-xmark"></i>
         </div>
-        <input
-          type="time"
-          className="h-[45px] pl-9 border border-[#8E8F8F] rounded-lg p-2 "
-          style={{ color: "#8E8F8F" }}
-          placeholder="Apr 03,2022"
-        />
-        <div className="relative">
-          <input
-            type="text"
-            className="h-[45px] w-[150px] pl-9 border border-[#8E8F8F] rounded-lg p-2 "
-            style={{ color: "#8E8F8F" }}
-            placeholder="Apr 03,2022"
-          />
-          <img
-            src="../Vector (11).png"
-            alt=""
-            className="absolute top-3 left-2"
-          />
+        <div className="date">
+          <i className="fa-regular fa-clock"></i>
+          <span>12:00 AM</span>
+          <i className="fa-solid fa-xmark"></i>
         </div>
-        <input
-          type="time"
-          className="h-[45px] pl-9 border border-[#8E8F8F] rounded-lg p-2 "
-          style={{ color: "#8E8F8F" }}
-          placeholder="Apr 03,2022"
-        />
+        <i className="fa-solid fa-arrow-right"></i>
+        <div className="date">
+          <i className="fa-solid fa-calendar-days"></i>
+          <span>Aug 01, 2024</span>
+          <i className="fa-solid fa-xmark"></i>
+        </div>
+        <div className="date">
+          <i className="fa-regular fa-clock"></i>
+          <span>12:00 AM</span>
+          <i className="fa-solid fa-xmark"></i>
+        </div>
       </div>
-      <div className="flex justify-between gap-10 my-6">
-        <div className="flex gap-[80px]">
-        <div className="flex flex-col gap-4"> 
-            <div>Today</div>
-            <div>Yesterday</div>
-            <div>Last Week</div>
-            <div>2 weeks</div>
-            <div>this month</div>
-            <div>Last month</div>
-            <div>3 Months</div>
-            <div>This Quater</div>
-            <div>This year</div>
-        </div>
-        <div className="flex flex-col gap-4"> 
-            <div>Wed</div>
-            <div>Tue</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-            <div>Mar 31, 2022</div>
-     
+
+      <div className="custom-date-picker">
+        <div className="days-pickers">
+          <div className="item">
+            <p className="selected">Today</p>
+            <p className="normal">Fri</p>
+          </div>
+          <div className="item">
+            <p className="selected">Yesterday</p>
+            <p className="normal">Thur</p>
+          </div>
+          <div className="item">
+            <p className="selected">Last Week</p>
+            <p className="normal">Aug 18, 2024</p>
+          </div>
+          <div className="item">
+            <p className="selected">2 weeks</p>
+            <p className="normal">Aug 16, 2024</p>
+          </div>
         </div>
 
-        </div>
-
-      <Calendar
-        onChange={onChange}
-        value={value}
-        showNeighboringMonth={false}
-      />
+        <DatePicker
+          selected={startDate}
+          onChange={(update) => {
+            setStartDate(update[0]);
+            setEndDate(update[1]);
+          }}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          inline
+        />
       </div>
-      <button className="bg-[#34B7C1] w-full py-2 rounded-md text-white font-[600]">Apply Date Range</button>
+
+      <button className="apply-date-range-btn">
+        Apply Date Range
+      </button>
     </div>
   );
 };

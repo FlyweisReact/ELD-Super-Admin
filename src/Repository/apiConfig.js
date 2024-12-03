@@ -186,6 +186,9 @@ const endPoints = {
     getRecap: (id) =>
       `api/v1/user/getAllDriverLogFromCurrentMonthByDriverId/${id}`,
     editLog: (id) => `api/v1/user/updateElogForm/${id}`,
+    allCompanyLog : `api/v1/admin/AllElogForm?company=${getCompanyId()}`,
+    tripHistory : `api/v1/admin/Truck/getAllTruck?company=${getCompanyId()}`,
+    tripAvg : `api/v1/corporate/Truck/getAllTruckDashboard?company=${getCompanyId()}`
   },
 };
 

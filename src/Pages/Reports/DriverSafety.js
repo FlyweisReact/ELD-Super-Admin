@@ -1,14 +1,31 @@
 /** @format */
 
-import React, { useState } from "react";
-import { AlertDateSelector, EditThreshold } from "../../Components/Modals/Modals";
+import React, { useEffect, useState } from "react";
+import {
+  AlertDateSelector,
+  EditThreshold,
+} from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, PieChart } from "../../Components/ApexCharts/Charts";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
+import { returnFullName } from "../../utils/utils";
 
 const DriverSafety = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi(endPoints.logbook.allCompanyLog, {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const pieSeries = [100];
   const pieLabel = ["Overspeeding"];
@@ -24,23 +41,21 @@ const DriverSafety = () => {
     "Safety Events",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Abdul Muqeet",
-      <div
-        className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto"
-        style={{ fontWeight: "900" }}
-      >
-        100
-      </div>,
-      "0 mi",
-      "0h 0m",
-      0,
-      0,
-      0,
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    <div
+      className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto"
+      style={{ fontWeight: "900" }}
+    >
+      ---
+    </div>,
+    i?.milesDriven,
+    "---",
+    i?.driver?.violations,
+    "---",
+    "---",
+  ]);
 
   const value = 99.17;
 
