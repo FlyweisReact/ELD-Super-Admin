@@ -64,6 +64,7 @@ import DriveTime from "./Pages/Reports/DriveTime";
 import Utilization from "./Pages/Reports/Utilization";
 import ReportHistory from "./Pages/Reports/ReportHistory";
 import Chat from "./Pages/Chat/Chat.js";
+import ProtectedRoute from "./Pages/ProtectedRoute.js";
 
 const router = createBrowserRouter([
   {
@@ -84,7 +85,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       { path: "/subscription", element: <Subscription /> },
       { path: "/home", element: <Home /> },
@@ -94,7 +99,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <LayoutSuper />,
+    element: (
+      <ProtectedRoute>
+        <LayoutSuper />
+      </ProtectedRoute>
+    ),
     children: [
       { path: "/Dashboard/:id", element: <Dashboard /> },
       { path: "/Logbook", element: <Logbook /> },
