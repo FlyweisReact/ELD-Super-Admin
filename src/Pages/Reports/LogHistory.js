@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   AlertDateSelector,
   EditThreshold,
@@ -11,21 +11,23 @@ import { AreaCharts, PieChart } from "../../Components/ApexCharts/Charts";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { returnFullName } from "../../utils/utils";
+import { Pagination } from "../../Components/HelpingComponent";
 
 const LogHistory = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHandler();
-  }, []);
+  }, [fetchHandler]);
 
   const pieSeries = [100];
   const pieLabel = ["Approved", "Rejected", "Canceled", "Pending"];
@@ -127,6 +129,12 @@ const LogHistory = () => {
       </div>
 
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={body} />
+      <Pagination
+        className={"mt-5"}
+        totalPages={data?.data?.totalPages}
+        currentPage={page}
+        setCurrentPage={setPage}
+      />
     </section>
   );
 };

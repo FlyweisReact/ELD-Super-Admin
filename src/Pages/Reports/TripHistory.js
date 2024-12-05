@@ -1,10 +1,10 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
-import { Tabs } from "../../Components/HelpingComponent";
+import { Pagination, Tabs } from "../../Components/HelpingComponent";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
@@ -59,12 +59,17 @@ const TripHistory = () => {
   const [data, setData] = useState(null);
   const [vehicleLog, setVehicleLog] = useState(null);
   const [avgReport, setAvgReport] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
+
+  useEffect(() => {
+    fetchHandler();
+  }, [fetchHandler]);
 
   const fetchLog = () => {
     getApi(endPoints.logbook.tripHistory, {
@@ -76,11 +81,8 @@ const TripHistory = () => {
   };
 
   useEffect(() => {
-    fetchHandler();
     fetchLog();
   }, []);
-
-  console.log(avgReport?.data);
 
   const tempSeries = [
     {
@@ -237,11 +239,19 @@ const TripHistory = () => {
       </div>
 
       {selectedTab === "Drivers" ? (
-        <TableLayout
-          thead={thead}
-          className="vehicle-table mt-5"
-          tbody={body}
-        />
+        <div>
+          <TableLayout
+            thead={thead}
+            className="vehicle-table mt-5"
+            tbody={body}
+          />
+          <Pagination
+            className={"mt-5"}
+            totalPages={data?.data?.totalPages}
+            currentPage={page}
+            setCurrentPage={setPage}
+          />
+        </div>
       ) : (
         <TableLayout
           thead={vehicleHead}

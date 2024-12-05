@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DateFilter from "../Components/DateFilter";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -12,6 +12,7 @@ import { Dropdown } from "antd";
 import ReactApexChart from "react-apexcharts";
 import TableLayout from "../Components/TableLayout/TableLayout";
 import { PopUp } from "../Components/PopUp";
+import { Pagination } from "../Components/HelpingComponent";
 
 const items = [
   {
@@ -32,17 +33,18 @@ const Reportdetails = () => {
   const [openPopUp, setOpenPopUp] = useState(false);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
   const value = 29;
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHandler();
-  }, []);
+  }, [fetchHandler]);
 
   const thead = [
     "No",
@@ -184,6 +186,13 @@ const Reportdetails = () => {
         className="vehicle-table mt-5 mb-5"
         tbody={tbody}
       />
+      <Pagination
+        className={"mt-5"}
+        totalPages={data?.data?.totalPages}
+        currentPage={page}
+        setCurrentPage={setPage}
+      />
+
       <PopUp
         title="Date Filter"
         openModal={openPopUp}

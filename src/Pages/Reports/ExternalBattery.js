@@ -1,11 +1,12 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { Dropdown } from "antd";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
+import { Pagination } from "../../Components/HelpingComponent";
 
 const items = [
   {
@@ -17,16 +18,17 @@ const items = [
 const ExternalBattery = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHandler();
-  }, []);
+  }, [fetchHandler]);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -46,7 +48,6 @@ const ExternalBattery = () => {
     i?.truck?.vehicleNumber,
     i?.truck?.vehicleType,
   ]);
-
 
   return (
     <section className="dormancy-report-page p-5">
@@ -78,6 +79,12 @@ const ExternalBattery = () => {
       <hr className="mt-5 mb-5" />
 
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={tbody} />
+      <Pagination
+        className={"mt-5"}
+        totalPages={data?.data?.totalPages}
+        currentPage={page}
+        setCurrentPage={setPage}
+      />
     </section>
   );
 };

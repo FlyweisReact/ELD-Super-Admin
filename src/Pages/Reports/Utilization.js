@@ -1,13 +1,14 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
 import { AlertDateSelector, EditHour } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
+import { Pagination } from "../../Components/HelpingComponent";
 
 const items = [
   {
@@ -56,16 +57,17 @@ const Utilization = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHandler();
-  }, []);
+  }, [fetchHandler]);
 
   const tempSeries = [
     {
@@ -178,6 +180,13 @@ const Utilization = () => {
       </div>
 
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={body} />
+      <Pagination
+        className={"mt-5"}
+        totalPages={data?.data?.totalPages}
+        currentPage={page}
+        setCurrentPage={setPage}
+      />
+
     </section>
   );
 };

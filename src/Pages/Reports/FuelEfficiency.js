@@ -1,13 +1,13 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   AlertDateSelector,
   EditThreshold,
 } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { Dropdown } from "antd";
-import { Tabs } from "../../Components/HelpingComponent";
+import { Pagination, Tabs } from "../../Components/HelpingComponent";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { returnFullName } from "../../utils/utils";
@@ -24,16 +24,17 @@ const FuelEfficiency = () => {
   const [show, setShow] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Drivers");
   const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const fetchHandler = () => {
-    getApi(endPoints.logbook.allCompanyLog, {
+  const fetchHandler = useCallback(() => {
+    getApi(endPoints.logbook.allCompanyLog({ page }), {
       setResponse: setData,
     });
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHandler();
-  }, []);
+  }, [fetchHandler]);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -124,6 +125,12 @@ const FuelEfficiency = () => {
       ) : (
         <TableLayout thead={thead} className="vehicle-table mt-5" />
       )}
+      <Pagination
+        className={"mt-5"}
+        totalPages={data?.data?.totalPages}
+        currentPage={page}
+        setCurrentPage={setPage}
+      />
     </section>
   );
 };
