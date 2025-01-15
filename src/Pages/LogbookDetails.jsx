@@ -1,17 +1,14 @@
 /** @format */
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import profile from "../Assets/Header/profile.svg";
-import { BiSolidBell } from "react-icons/bi";
-import { IoCloseSharp } from "react-icons/io5";
 import ReactApexChart from "react-apexcharts";
 import TableLayout from "../Components/TableLayout/TableLayout";
+import { EditElog, EditElogEvent } from "../Components/Modals/Modals.js";
 import { useParams } from "react-router-dom";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
 import {
   returnFullName,
-  convertSecondsToTimeFormat,
   convertSecondsToHHMM,
   downloadReport,
 } from "../utils/utils.js";
@@ -20,7 +17,8 @@ import { IoIosArrowForward } from "react-icons/io";
 import styles from "../css/modules/logbook.module.css";
 import { statusMapping } from "../constant/constant";
 import { useReactToPrint } from "react-to-print";
-import { EditElog, EditElogEvent } from "../Components/Modals/Modals.js";
+import { MdEdit } from "react-icons/md";
+import { FaPlus } from "react-icons/fa6";
 
 const returnNickName = (data) => {
   if (data?.firstName || data?.lastName) {
@@ -29,7 +27,6 @@ const returnNickName = (data) => {
     return "";
   }
 };
-
 const getUpcomingDate = (formattedDate, setFormattedDate) => {
   const [day, month, year] = formattedDate.split("-").map(Number);
   const date = new Date(year, month - 1, day);
@@ -80,6 +77,22 @@ function formatDateString(dateString) {
   return formatDate(originalDate);
 }
 
+function formatTime(dateTimeString) {
+  const date = new Date(dateTimeString); // Convert the string to a Date object
+  let hours = date.getHours(); // Get the hours in 24-hour format
+  const minutes = date.getMinutes(); // Get the minutes
+  const ampm = hours >= 12 ? "PM" : "AM"; // Determine AM or PM
+
+  // Convert to 12-hour format
+  hours = hours % 12 || 12; // Adjust 0 to 12 for midnight
+
+  // Pad minutes with leading zero if needed
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  // Return formatted time
+  return `${hours}:${formattedMinutes} ${ampm}`;
+}
+
 const RecapContainer = ({ recapData }) => {
   const dateFormatter = (date) => {
     const splitData = date?.split("-");
@@ -92,8 +105,11 @@ const RecapContainer = ({ recapData }) => {
   };
   return recapData?.data?.map((item, index) => (
     <div className="flex justify-between hide-print" key={index}>
-      <p className={styles.desc}> {dateFormatter(item?.date)} </p>
-      <p className={styles.desc}>
+      <p className={styles.desc} style={{ color: "#000", fontWeight: "900" }}>
+        {" "}
+        {dateFormatter(item?.date)}{" "}
+      </p>
+      <p className={styles.desc} style={{ color: "#000", fontWeight: "900" }}>
         {" "}
         {item?.totalSec && convertSecondsToHHMM(item?.totalSec)}{" "}
       </p>
@@ -127,6 +143,87 @@ function convertSecondsToReadableFormat(seconds) {
   return timeString.trim();
 }
 
+const checkStatus = (status) => {
+  if (status === "On") {
+    return (
+      <div className="logbook-dutystatus on-duty">
+        <p>ON</p>
+      </div>
+    );
+  } else if (status === "Off") {
+    return (
+      <div className="logbook-dutystatus off-duty">
+        <p>OFF</p>
+      </div>
+    );
+  } else if (status === "D") {
+    return (
+      <div className="logbook-dutystatus drive">
+        <p>D</p>
+      </div>
+    );
+  } else {
+    return (
+      <div className="logbook-dutystatus sb">
+        <p> {status} </p>
+      </div>
+    );
+  }
+};
+
+const CheckDeviceConnection = (status) => {
+  if (status === "Connected") {
+    return (
+      <div
+        className="logbook-device-connect connected"
+        style={{ justifyContent: "flex-start" }}
+      >
+        <span className="color-dot" />
+        Online
+      </div>
+    );
+  } else {
+    return (
+      <div
+        className="logbook-device-connect"
+        style={{ justifyContent: "flex-start" }}
+      >
+        <span className="color-dot" />
+        Offline
+      </div>
+    );
+  }
+};
+
+const Return_Duty_Status = (status) => {
+  if (status === "On") {
+    return <span>On Duty</span>;
+  } else if (status === "Off") {
+    return <span>Off Duty</span>;
+  } else if (status === "D") {
+    return <span>Drive</span>;
+  } else if (status === "SB") {
+    return <span>Sleeper Berth</span>;
+  }
+};
+
+function formatTimeHHMM(totalSec) {
+  if (totalSec <= 0) return "00:00";
+  const hours = Math.floor(totalSec / 3600);
+  const minutes = Math.floor((totalSec % 3600) / 60);
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}`;
+}
+
+function getTotalTimeForStatus(data, status) {
+  const totalSec = data
+    .filter((item) => item.dutyStatus === status)
+    .reduce((sum, item) => sum + (item.totalMin || 0), 0);
+  return formatTimeHHMM(totalSec);
+}
+
 const LogbookDetails = () => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
@@ -137,7 +234,11 @@ const LogbookDetails = () => {
   const [formattedDate, setFormattedDate] = useState(getTodayDate);
   const [selectedLog, setSelectedLog] = useState(null);
   const [recapData, setRecapData] = useState(null);
-  const [driver, setDriver] = useState(null);
+  const [driverInfo, setDriverInfo] = useState(null);
+  const [sbTotalTime, setSbTotalTime] = useState("00:00");
+  const [dTotalTime, setDTotalTime] = useState("00:00");
+  const [onTotalTime, setOnTotalTime] = useState("00:00");
+  const [offTotalTime, setOffTotalTime] = useState("00:00");
   const [chartState, setChartState] = useState({
     series: [
       {
@@ -157,42 +258,109 @@ const LogbookDetails = () => {
       dataLabels: {
         enabled: false,
       },
-      title: {
-        text: "",
-        align: "left",
+      tooltip: {
+        enabled: false,
       },
-
+      markers: {
+        size: 0,
+      },
       xaxis: {
-        title: {
-          text: "",
-        },
-        labels: {
-          formatter: (val) => `${val}`, // Customize the time labels if needed
-        },
+        categories: [
+          "M",
+          "",
+          "1",
+          "",
+          "2",
+          "",
+          "3",
+          "",
+          "4",
+          "",
+          "5",
+          "",
+          "6",
+          "",
+          "7",
+          "",
+          "8",
+          "",
+          "9",
+          "",
+          "10",
+          "",
+          "11",
+          "",
+          "N",
+          "",
+          "1",
+          "",
+          "2",
+          "",
+          "3",
+          "",
+          "4",
+          "",
+          "5",
+          "",
+          "6",
+          "",
+          "7",
+          "",
+          "8",
+          "",
+          "9",
+          "",
+          "10",
+          "",
+          "11",
+          "",
+          "M",
+        ],
       },
       yaxis: {
-        title: {
-          text: "",
-        },
-        categories: ["S", "ON", "OFF", "SB"], // Fixed status values on the y-axis
+        min: 1,
+        max: 4,
         labels: {
-          formatter: function (val) {
-            return val; // Show the status labels as they are
+          formatter: function (value) {
+            const statusLabels = { 2: "D", 1: "On", 3: "SB", 4: "Off" };
+            // const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
+            return statusLabels[value] || "";
           },
         },
       },
-
-      markers: {
-        hover: {
-          sizeOffset: 4,
+      grid: {
+        show: true,
+        borderColor: "#e0e0e0", // Match gridlines to desired style
+        xaxis: {
+          lines: {
+            show: true, // Show vertical gridlines
+          },
+        },
+        yaxis: {
+          lines: {
+            show: false, // Show horizontal gridlines
+          },
         },
       },
+      colors: ["#3E7B27"],
     },
   });
+
+  const fetchDriverInfo = useCallback(() => {
+    getApi(endPoints.users.getUserDetail(id), {
+      setResponse: setDriverInfo,
+      showErr: false,
+    });
+  }, [id]);
+
+  useEffect(() => {
+    fetchDriverInfo();
+  }, [fetchDriverInfo]);
 
   const fetchDetails = useCallback(() => {
     getApi(endPoints.logbook.getDriverLoogbook({ id, date: formattedDate }), {
       setResponse: setGraph,
+      showErr: false,
     });
   }, [id, formattedDate]);
 
@@ -200,6 +368,7 @@ const LogbookDetails = () => {
     if (id) {
       getApi(endPoints.logbook.getRecap(id), {
         setResponse: setRecapData,
+        showErr: false,
       });
     }
   }, [id]);
@@ -216,68 +385,49 @@ const LogbookDetails = () => {
         const date = new Date(item.fromTime);
         return isNaN(date.getTime()) ? null : date;
       });
-
       const statusArr = graph?.data?.docs?.map(
         (item) => statusMapping[item.dutyStatus]
       );
+      const chartData = new Array(50).fill(null);
+      let lastStatus = null;
+      let lastTimeIndex = -1;
+      let statusMap = {};
+      timeArray.forEach((time, index) => {
+        if (time) {
+          const hour = time.getHours();
+          const minutes = time.getMinutes();
+          let categoryIndex = hour * 2 + (minutes >= 30 ? 1 : 0);
+          if (minutes >= 15 && minutes < 30) {
+            categoryIndex = hour * 2 + 1;
+          }
+          if (!(categoryIndex in statusMap)) {
+            statusMap[categoryIndex] = statusArr[index];
+          }
+          if (lastTimeIndex !== -1 && categoryIndex > lastTimeIndex) {
+            for (let i = lastTimeIndex + 1; i < categoryIndex; i++) {
+              if (!statusMap[i]) {
+                statusMap[i] = lastStatus;
+              }
+            }
+          }
 
-      const chartData = statusArr.map((status, index) => ({
-        x: timeArray[index],
-        y: status ? status : 3,
-      }));
+          lastStatus = statusArr[index];
+          lastTimeIndex = categoryIndex;
+        }
+      });
 
-      const lastItem = graph?.data?.docs[graph.data.docs.length - 1];
-      const lastToTime = lastItem ? new Date(lastItem.toTime) : null;
-      if (lastToTime && !isNaN(lastToTime.getTime())) {
-        const lastStatus = statusMapping[lastItem.dutyStatus];
-        chartData.push({
-          x: lastToTime,
-          y: lastStatus,
-        });
-      }
+      Object.keys(statusMap).forEach((index) => {
+        chartData[index] = statusMap[index];
+      });
 
       setChartState((prevState) => ({
         ...prevState,
         series: [
           {
-            name: "Status",
-            data: chartData, // Use prepared chart data
+            name: "Duty Status",
+            data: chartData,
           },
         ],
-        options: {
-          ...prevState.options,
-          title: {
-            text: formatDateString(formattedDate),
-          },
-          yaxis: {
-            min: 1,
-            max: 4,
-            title: {
-              text: "",
-            },
-            labels: {
-              formatter: function (value) {
-                const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
-                return statusLabels[value];
-              },
-            },
-          },
-          xaxis: {
-            title: {
-              text: "",
-            },
-            labels: {
-              formatter: function (value) {
-                const date = new Date(value);
-                return date.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                });
-              },
-            },
-          },
-        },
       }));
     }
   }, [graph]);
@@ -290,15 +440,10 @@ const LogbookDetails = () => {
     "Actions",
   ];
   const body = graph?.data?.docs?.map((i) => [
-    <div
-      className={`bg-[#EDF8F0] text-[#1DBC60] w-[60px]  px-4 py-1 rounded-2xl m-auto font-[900]`}
-    >
-      {i?.status}
-    </div>,
+    checkStatus(i?.dutyStatus),
     <div className="text-start">
-      <p className="font-[900]"> {i?.dutyStatus} </p>
-      {convertSecondsToTimeFormat(i?.totalMin)} <br />
-      {convertSecondsToReadableFormat(i?.totalMin)}
+      <p className="font-[900]">{Return_Duty_Status(i?.dutyStatus)}</p>
+      {formatTime(i?.fromTime)} | {convertSecondsToReadableFormat(i?.totalMin)}
     </div>,
     i?.location,
     i?.comment,
@@ -318,6 +463,7 @@ const LogbookDetails = () => {
         endPoints.logbook.getLogbookByDriver(id, inputDate(formattedDate)),
         {
           setResponse: setDetails,
+          showErr: false,
         }
       );
     }
@@ -328,18 +474,15 @@ const LogbookDetails = () => {
   }, [fetchDriverLogbook]);
 
   useEffect(() => {
-    if (detail) {
+    if (detail !== null) {
       setLoogBookData(detail?.data?.docs?.reverse()?.[0]);
+    }
+    if (detail === null) {
+      setLoogBookData(null);
     }
   }, [detail]);
 
-  useEffect(() => {
-    if (id) {
-      getApi(endPoints.drivers.getDriverDetail(id), {
-        setResponse: setDriver,
-      });
-    }
-  }, [id]);
+
 
   // Function to format date from DD-MM-YYYY to YYYY-MM-DD
   const inputDate = (date) => {
@@ -371,12 +514,22 @@ const LogbookDetails = () => {
     downloadReport(handlePrint);
   };
 
+  useEffect(() => {
+    if (graph) {
+      const data = graph?.data?.docs || [];
+      setSbTotalTime(getTotalTimeForStatus(data, "SB"));
+      setDTotalTime(getTotalTimeForStatus(data, "D"));
+      setOnTotalTime(getTotalTimeForStatus(data, "On"));
+      setOffTotalTime(getTotalTimeForStatus(data, "Off"));
+    }
+  }, [graph]);
+
   return (
     <>
       <EditElog
-        show={openModal2}
+      show={openModal2}
         handleClose={() => setOpenModal2(false)}
-        title={`${returnFullName(driver?.data)} /  ${formatDateString(
+        title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate
         )}`}
         data={loogBookData}
@@ -384,9 +537,9 @@ const LogbookDetails = () => {
       />
 
       <EditElogEvent
-        show={open}
+       show={open}
         handleClose={() => setOpen(false)}
-        title={`${returnFullName(driver?.data)} /  ${formatDateString(
+        title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate
         )}`}
         date={formatDateString(formattedDate)}
@@ -397,23 +550,20 @@ const LogbookDetails = () => {
       <div className={`mb-3`} ref={componentRef}>
         <div className={styles.log_header}>
           <div className="flex items-center gap-3">
-            <p className="font-[700] w-[40px]">
-              {returnNickName(driver?.data)}
+            <p
+              className="font-[700] w-[40px]"
+              style={{ textTransform: "uppercase" }}
+            >
+              {returnNickName(driverInfo?.data)}
             </p>
             <div>
-              <div className="text-[#1F384C] font-[700]">
-                {returnFullName(driver?.data)}
+              <div
+                className="text-[#1F384C] font-[700]"
+                style={{ textTransform: "capitalize" }}
+              >
+                {returnFullName(driverInfo?.data)}
               </div>
-              <div className="flex items-center gap-1">
-                <img
-                  src="../Ellipse 30.png"
-                  alt=""
-                  className="w-[10px] h-[10px]"
-                />
-                <span className="text-[#1F384C] text-[14px]">
-                  {driver?.data?.dutyStatus}
-                </span>
-              </div>
+              {CheckDeviceConnection(driverInfo?.data?.isDeviceConnected)}
             </div>
           </div>
           <div className={styles.btn_container}>
@@ -428,17 +578,17 @@ const LogbookDetails = () => {
             </div>
             <div
               onClick={() => setOpenModal2(true)}
-              className="flex items-center cursor-pointer gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1] hidePrint"
+              className="flex items-center cursor-pointer gap-2 py-2 px-3 bg-[#86E3CE] rounded-md border border-1 border-[#86E3CE] hidePrint"
             >
-              <img src="../Vector4.png" alt="" className="h-fit" />
-              <span className="text-white">Edit Elog Form</span>
+              <MdEdit size={20} />
+              <span className="text-black font-bold">Edit Elog Form</span>
             </div>
             <div
-              className="flex items-center gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1] hidePrint"
+              className="flex items-center gap-2 py-2 px-3 bg-[#86E3CE] rounded-md border border-1 border-[#86E3CE] hidePrint"
               onClick={handlePrint2}
             >
-              <img src="../Vector3.png" alt="" className="h-fit" />
-              <span className="text-white">Generate Report</span>
+              <FaPlus size={20} />
+              <span className="text-black font-bold">Download Report</span>
             </div>
           </div>
         </div>
@@ -446,146 +596,155 @@ const LogbookDetails = () => {
         <div className={styles.drop_content}>
           <div className={styles.content}>
             <div className={styles.all_fields}>
-              <div className="text-[#8E8F8F]">
-                <p>Start Location</p>
-                <p className="text-[#000] font-[900]">
+              <div className="text-[#000]">
+                <p className={styles.title_feild}>Start Location</p>
+                <p className={styles.value_field}>
                   {" "}
                   {loogBookData?.startLocation}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Start / End Odometer</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.startOdometer} / {loogBookData?.endOdometer}
+                <p className={styles.title_feild}>Start / End Odometer</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.startOdometer}
+                  {loogBookData?.startOdometer ? "/" : ""}
+                  {loogBookData?.endOdometer}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Co Driver Name</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Co Driver Name</p>
+                <p className={styles.value_field}>
                   {loogBookData?.coDriverName}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Shipping ID</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Shipping ID</p>
+                <p className={styles.value_field}>
                   {" "}
                   {loogBookData?.shippingId}{" "}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Destination</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Destination</p>
+                <p className={styles.value_field}>
                   {loogBookData?.destinationLocation}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Miles Today</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Miles Today</p>
+                <p className={styles.value_field}>
                   {" "}
                   {loogBookData?.milesToday}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Truck Number</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Truck Number</p>
+                <p className={styles.value_field}>
                   {loogBookData?.vehicleNumber}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Trailer ID</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.trailerId}
-                </p>
+                <p className={styles.title_feild}>Trailer ID</p>
+                <p className={styles.value_field}>{loogBookData?.trailerId}</p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Timezone</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.driver?.timeZone}
-                </p>
+                <p className={styles.title_feild}>Timezone</p>
+                <p className={styles.value_field}>{loogBookData?.timeZone}</p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>24 Start Time</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>24 Start Time</p>
+                <p className={styles.value_field}>
                   {loogBookData?.twentyForHourStartTime}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Start / End Engine Hours</p>
-                <p className="text-[#000] font-[900]">---</p>
-              </div>
-              <div className="text-[#8E8F8F]">
-                <p>Driver Name</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.driverName}
+                <p className={styles.title_feild}>Start / End Engine Hours</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.startEngineHours}{" "}
+                  {loogBookData?.startEngineHours ? "/" : ""}
+                  {loogBookData?.endEngineHours}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Licence State</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.driver?.state}
+                <p className={styles.title_feild}>Driver Name</p>
+                <p className={styles.value_field}>
+                  {returnFullName(driverInfo?.data)}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>ELD ID</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>Licence State</p>
+                <p className={styles.value_field}>{driverInfo?.data?.state}</p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>File Comment</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.comment}
+                <p className={styles.title_feild}> ELD ID</p>
+                <p className={styles.value_field}>{loogBookData?.eldId}</p>
+              </div>
+              <div className="text-[#8E8F8F]">
+                <p className={styles.title_feild}>File Comment</p>
+                <p className={styles.value_field}>{loogBookData?.comment}</p>
+              </div>
+              <div className="text-[#8E8F8F]">
+                <p className={styles.title_feild}>Driver Licence</p>
+                <p className={styles.value_field}>
+                  {driverInfo?.data?.license}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Driver Licence</p>
-                <p className="text-[#000] font-[900]">
-                  {loogBookData?.driver?.license}
+                <p className={styles.title_feild}>ELD Manufacturer</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.eldManufacturer}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>ELD Manufacturer</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>
+                  Unidentified Driver Records
+                </p>
+                <p className={styles.value_field}>
+                  {loogBookData?.unidentifiedDriverRecords}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Unidentified Driver Records</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>Print/Display Date</p>
+                <p className={styles.value_field}> {loogBookData?.date} </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Print/Display Date</p>
-                <p className="text-[#000] font-[900]"> {loogBookData?.date} </p>
+                <p className={styles.title_feild}>Exempt Driver Status</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.exemptDriverStatus}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Exempt Driver Status</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>Data Diagnostic Indicators</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.dataDiagnosticIndicators}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Data Diagnostic Indicators</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>ELD Malfunction Indicators</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.eldMalfunctionIndicators}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>ELD Malfunction Indicators</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className={styles.title_feild}>Truck Tractor VIN</p>
+                <p className={styles.value_field}>
+                  {loogBookData?.truck?.vinNumber}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>Truck Tractor VIN</p>
-                <p className="text-[#000] font-[900]">---</p>
-              </div>
-              <div className="text-[#8E8F8F]">
-                <p>Carrier</p>
-                <p className="text-[#000] font-[900]">
+                <p className={styles.title_feild}>Carrier</p>
+                <p className={styles.value_field}>
                   {loogBookData?.carrierName}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
-                <p>USDOT </p>
-                <p className="text-[#000] font-[900]">
-                  {" "}
-                  {loogBookData?.dotNumber}
-                </p>
+                <p className={styles.title_feild}>USDOT </p>
+                <p className={styles.value_field}> {loogBookData?.dotNumber}</p>
               </div>
             </div>
 
             <div className={styles.signature_btn}>
-              <p className="text-[#8E8F8F]">Signature</p>
+              <p className={styles.title_feild}>Signature</p>
               {loogBookData?.signature ? (
                 loogBookData?.signature
               ) : (
@@ -594,37 +753,99 @@ const LogbookDetails = () => {
                   <p>Missing Signature</p>
                 </div>
               )}
+
+              <div
+                className={`px-6 py-4 w-[18vw] bg-[#E8F4FF] ${styles.recap_div} hidePrint`}
+              >
+                {recapData && (
+                  <p style={{ color: "#000", fontWeight: "900" }}>Recap</p>
+                )}
+
+                <div className="mt-4 text-[#000] ">
+                  {recapData && (
+                    <>
+                      <div className="flex flex-col gap-4 pr-3">
+                        <RecapContainer recapData={recapData} />
+                      </div>
+                      <hr style={{ margin: "16px 0px" }} />
+                    </>
+                  )}
+                  <div>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      Cycle Left
+                    </p>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      {" "}
+                      {loogBookData?.cycleLeft &&
+                        convertSecondsToHHMM(loogBookData?.cycleLeft)}{" "}
+                      {loogBookData?.cycleLeft ? "/" : ""}{" "}
+                      {loogBookData?.cycleDays}{" "}
+                      {loogBookData?.cycleDays > 1 ? "day (s)" : "day"}
+                    </p>
+                    <hr style={{ margin: "16px 0px" }} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      Available Today
+                    </p>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      {loogBookData?.availableToday &&
+                        convertSecondsToHHMM(loogBookData?.availableToday)}
+                    </p>
+                    <hr style={{ margin: "16px 0px" }} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      Worked Today
+                    </p>
+                    <p style={{ fontSize: "14px", fontWeight: "900" }}>
+                      {" "}
+                      {loogBookData?.workedToday &&
+                        convertSecondsToHHMM(loogBookData?.workedToday)}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className={`${styles.content} mt-5`}>
             <div className={styles.chart}>
-              <div className={styles.chart_container}>
-                <ReactApexChart
-                  options={chartState.options}
-                  series={graph?.data?.docs ? chartState.series : []}
-                  type="line"
-                  height={350}
-                />
-                <div className={styles.date_handler}>
-                  <div
-                    className={`${styles.go_back} hidePrint`}
-                    onClick={() =>
-                      getPreviousDay(formattedDate, setFormattedDate)
-                    }
-                  >
-                    <IoIosArrowBack size={16} />
-                  </div>
-                  {getTodayDate() !== formattedDate && (
+              <div className={styles.main_chart_container}>
+                <div className={styles.chart_container}>
+                  <ReactApexChart
+                    options={chartState.options}
+                    series={graph?.data?.docs ? chartState.series : []}
+                    type="line"
+                    height={350}
+                  />
+                  <div className={styles.date_handler}>
                     <div
-                      className={`${styles.go_forward} hidePrint`}
+                      className={`${styles.go_back} hidePrint`}
                       onClick={() =>
-                        getUpcomingDate(formattedDate, setFormattedDate)
+                        getPreviousDay(formattedDate, setFormattedDate)
                       }
                     >
-                      <IoIosArrowForward size={16} />
+                      <IoIosArrowBack size={16} />
                     </div>
-                  )}
+                    {getTodayDate() !== formattedDate && (
+                      <div
+                        className={`${styles.go_forward} hidePrint`}
+                        onClick={() =>
+                          getUpcomingDate(formattedDate, setFormattedDate)
+                        }
+                      >
+                        <IoIosArrowForward size={16} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.time_container}>
+                  <p className={styles.off_time}>{offTotalTime}</p>
+                  <p className={styles.sb_time}>{sbTotalTime}</p>
+                  <p className={styles.d_time}>{dTotalTime}</p>
+                  <p className={styles.on_time}>{onTotalTime}</p>
                 </div>
               </div>
 
@@ -633,33 +854,6 @@ const LogbookDetails = () => {
                 className="vehicle-table mt-5 mb-5"
                 tbody={body}
               />
-            </div>
-            <div
-              className={`px-6 py-4 w-[18vw] bg-[#E8F4FF] ${styles.recap_div} hidePrint`}
-            >
-              <p>Recap</p>
-
-              <div className="mt-4 text-[#858B9A] ">
-                <div className="flex flex-col gap-4 pr-3">
-                  <RecapContainer recapData={recapData} />
-                </div>
-                <hr style={{ margin: "16px 0px" }} />
-                <div>
-                  <p>Cycle Left</p>
-                  <p> {loogBookData?.cycleLeft} </p>
-                  <hr style={{ margin: "16px 0px" }} />
-                </div>
-                <div>
-                  <p>Available Today</p>
-                  <p>{loogBookData?.availableToday}</p>
-                  <hr style={{ margin: "16px 0px" }} />
-                </div>
-                <div>
-                  <p>Worked Today</p>
-                  <p>{loogBookData?.workedToday}</p>
-                  <hr style={{ margin: "16px 0px" }} />
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import refresh from "../Assets/Logbook/refresh.svg";
-import { GoDotFill } from "react-icons/go";
 import redisymbol from "../Assets/Logbook/redisymbol.svg";
 import {
   Loader,
@@ -19,7 +18,7 @@ import { Link } from "react-router-dom";
 const thead = [
   "Status",
   "Driver | Vehicle",
-  "Location | Last Sync",
+  "Location | Last Sync (EST)",
   "Violations",
   "HOS",
   "Drive Left",
@@ -28,31 +27,73 @@ const thead = [
   "App Status",
 ];
 
-const checkStatus = (item) => {
-  if (item?.status === "Active") {
+const formatDateInEST = (isoDateString) => {
+  const inputDate = new Date(isoDateString);
+  const options = {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+  const formattedEST = new Intl.DateTimeFormat("en-US", options).format(
+    inputDate
+  );
+  return formattedEST;
+};
+
+const formatSecondsToTime = (totalSeconds) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const remainingSecondsAfterHours = totalSeconds % 3600;
+  const minutes = Math.floor(remainingSecondsAfterHours / 60);
+  const seconds = remainingSecondsAfterHours % 60;
+
+  const formattedHours = String(hours).padStart(2, "0");
+  const formattedMinutes = String(minutes).padStart(2, "0");
+  const formattedSeconds = String(seconds).padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+};
+
+const getCurrentTimeInEST12Hour = () => {
+  const now = new Date();
+  const estFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", // EST timezone
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+  return estFormatter.format(now);
+};
+
+const CheckDeviceConnection = (status) => {
+  if (status === "Connected") {
     return (
-      <div className="w-[53px] h-[30px] rounded-2xl bg-[#1E87F0] text-white flex justify-center items-center">
-        On
+      <div className="logbook-device-connect connected">
+        <span className="color-dot" />
+        Connected
+        <img src={redisymbol} alt="" />
+      </div>
+    );
+  } else if (status === "Disconnected") {
+    return (
+      <div className="logbook-device-connect disconnected">
+        <span className="color-dot" />
+        Disconnected
+        <img src={redisymbol} alt="" />
       </div>
     );
   } else {
     return (
-      <div className="w-[53px] h-[30px] rounded-2xl bg-[#F0506E33] text-[#FB6262] flex justify-center items-center">
-        Off
+      <div className="logbook-device-connect">
+        <span className="color-dot" />
+        {status}
+        <img src={redisymbol} alt="" />
       </div>
     );
   }
-};
-
-const variantGiver = (item) => {
-  return (
-    <div
-      className="w-auto h-[30px] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto"
-      style={{ padding: "0px 10px" }}
-    >
-      {item}
-    </div>
-  );
 };
 
 const Logbook = () => {
@@ -60,12 +101,22 @@ const Logbook = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeDrivers, setActiveDrivers] = useState({});
   const [inactiveDriver, setInactiveDriver] = useState({});
+  const [deletedDriver, setDeletedDriver] = useState({});
+  const [activeVehicle, setActiveVehicles] = useState({});
+  const [deactiveVehicle, setDeactiveVehicles] = useState({});
+  const [activeUser, setActiveUser] = useState({});
+  const [deactiveUser, setDeactiveUser] = useState({});
+  const [activeTerminal, setActiveTerminal] = useState({});
+  const [deactiveTerminal, setDeactiveTerminal] = useState({});
   const [allDrivers, setAllDrivers] = useState({});
   const [loading, setLoading] = useState(false);
-  const [currentPage1, setCurrentPage1] = useState(1);
-  const [currentPage2, setCurrentPage2] = useState(1);
+  const [currentTime, setCurrentTime] = useState(null);
 
-  const fetchActiveDrivers = useCallback(() => {
+  const fetchCurrentEstTime = () => {
+    setCurrentTime(getCurrentTimeInEST12Hour());
+  };
+
+  const fetchActiverDrivers = useCallback(() => {
     getApi(endPoints.drivers.getAllDrivers({ page: currentPage, limit: 5 }), {
       setResponse: setActiveDrivers,
       setLoading,
@@ -74,45 +125,77 @@ const Logbook = () => {
 
   const fetchInActiveDrivers = useCallback(() => {
     getApi(
-      endPoints.drivers.allInactiveDriver({ page: currentPage1, limit: 5 }),
+      endPoints.drivers.allInactiveDriver({ page: currentPage, limit: 5 }),
       {
         setResponse: setInactiveDriver,
         setLoading,
       }
     );
-  }, [currentPage1]);
+  }, [currentPage]);
 
-  const fetchAllDrivers = useCallback(() => {
-    getApi(endPoints.drivers.getDriversList({ page: currentPage2, limit: 5 }), {
+  const fetchAlllDrivers = useCallback(() => {
+    getApi(endPoints.drivers.getDriversList({ page: currentPage, limit: 5 }), {
       setResponse: setAllDrivers,
       setLoading,
     });
-  }, [currentPage2]);
+  }, [currentPage]);
+
+  const allMergeFetch = () => {
+    fetchCurrentEstTime();
+    fetchActiverDrivers();
+    fetchInActiveDrivers();
+    fetchAlllDrivers();
+  };
 
   useEffect(() => {
-    fetchActiveDrivers();
-  }, [fetchActiveDrivers]);
+    fetchActiverDrivers();
+  }, [fetchActiverDrivers]);
 
   useEffect(() => {
     fetchInActiveDrivers();
   }, [fetchInActiveDrivers]);
 
   useEffect(() => {
-    fetchAllDrivers();
-  }, [fetchAllDrivers]);
+    fetchAlllDrivers();
+  }, [fetchAlllDrivers]);
+
+  useEffect(() => {
+    getApi(endPoints.drivers.allDeletedDriver({}), {
+      setResponse: setDeletedDriver,
+    });
+    getApi(endPoints.vehicles.getActiveVehicle({}), {
+      setResponse: setActiveVehicles,
+    });
+    getApi(endPoints.vehicles.deactiveVehicles({}), {
+      setResponse: setDeactiveVehicles,
+    });
+    getApi(endPoints.users.getUser({}), {
+      setResponse: setActiveUser,
+    });
+    getApi(endPoints.users.getDeactivatedUser({}), {
+      setResponse: setDeactiveUser,
+    });
+    getApi(endPoints.terminals.activeTerminal({}), {
+      setResponse: setActiveTerminal,
+    });
+    getApi(endPoints.terminals.inactiveTerminals({}), {
+      setResponse: setDeactiveTerminal,
+    });
+    fetchCurrentEstTime();
+  }, []);
 
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${activeDrivers?.data?.totalDocs})`,
+      label: `Active (${activeDrivers?.data?.totalDocs || 0})`,
     },
     {
       value: "Inactive",
-      label: `Inactive (${inactiveDriver?.data?.totalDocs}) `,
+      label: `Inactive (${inactiveDriver?.data?.totalDocs || 0}) `,
     },
     {
       value: "All",
-      label: `All (${allDrivers?.data?.totalDocs})`,
+      label: `All (${allDrivers?.data?.totalDocs || 0})`,
     },
   ];
 
@@ -120,96 +203,192 @@ const Logbook = () => {
     return (
       <div className="flex items-center gap-2 eld-component">
         <div className="text-[#8E8F8F] font-bold">
-          Mode :<span className="text-[#34B7C1]">ELD</span>
+          Mode :<span className="text-[#86e3ce]">ELD</span>
         </div>
-        <div className="w-[214px] h-[45px] rounded-lg border text-[#8E8F8F] flex justify-center items-center gap-2">
-          10:16 PM (EDIT) <img src={refresh} alt="" />
+        <div
+          style={{ cursor: "pointer" }}
+          className="w-[214px] h-[45px] rounded-lg border text-[#8E8F8F] flex justify-center items-center gap-2 cursor-pointer"
+          onClick={() => allMergeFetch()}
+        >
+          {currentTime} (EST) <img src={refresh} alt="" />
         </div>
       </div>
     );
   };
 
-  // ====== active driver's =========
+  const checkStatus = (item) => {
+    if (item?.dutyStatus === "onDuty") {
+      return (
+        <div className="logbook-dutystatus on-duty">
+          <p>ON</p>
+        </div>
+      );
+    } else if (item?.dutyStatus === "off-duty") {
+      return (
+        <div className="logbook-dutystatus off-duty">
+          <p>OFF</p>
+        </div>
+      );
+    } else if (item?.dutyStatus === "Drive") {
+      return (
+        <div className="logbook-dutystatus drive">
+          <p>D</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="logbook-dutystatus sb">
+          <p>{item?.dutyStatus}</p>
+        </div>
+      );
+    }
+  };
+
+  const variantGiver = (item) => {
+    return (
+      <div className="w-[auto] h-[auto] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto p-2">
+        {item}
+      </div>
+    );
+  };
+
   const tbody = activeDrivers?.data?.docs?.map((i) => [
     checkStatus(i),
-    <Link
-      to={`/Logbook/${i?._id}`}
-      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
-    >
-      {returnFullName(i)}{" "}
-      {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </Link>,
-    i?.location?.coordinates?.map((item) => item),
+    <span>
+      <Link
+        to={`/Logbook/${i?._id}`}
+        style={{
+          color: "blue",
+          textDecoration: "underline",
+          fontWeight: "900",
+          textTransform: "capitalize",
+        }}
+      >
+        {returnFullName(i)}
+      </Link>{" "}
+      <br />
+      <span style={{ textAlign: "left" }}>
+        {" "}
+        {i?.truck?.vehicleNumber ? i?.truck?.vehicleNumber : ""}
+      </span>
+    </span>,
+    <span>
+      {i?.locationInWord} <br />
+      {i?.lastSync && formatDateInEST(i?.lastSync)}
+    </span>,
     variantGiver(i?.violations),
-    <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
-      {i?.hos}
+    <div className="logbook-hos-status ready">
+      <p className="status"> {i?.hosStatus}</p>
+      <p className="timer"> {i?.hos} </p>
+      <div className="border-co" />
     </div>,
-    variantGiver(i?.driveLeft),
-    variantGiver(i?.shiftLeft),
-    <div className="w-[44px] h-[30px] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto">
-      {i?.cycleInHrs || 0} hr
+    variantGiver(formatSecondsToTime(i?.driveLeft)),
+    variantGiver(formatSecondsToTime(i?.shiftLeft)),
+    <div className="w-[auto] h-[auto] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto p-2">
+      {i?.cycleInHrs || 0} hr / {i?.cycleInDays} days
     </div>,
-    <div className="flex items-center gap-2">
-      <GoDotFill style={{ color: "#A44C4C" }} />
-      {i?.dutyStatus}
-      <img src={redisymbol} alt="" />
-    </div>,
+    CheckDeviceConnection(i?.isDeviceConnected),
   ]);
-  // =================================
-  // ======= inactive driver's =======
+
   const inactiveBody = inactiveDriver?.data?.docs?.map((i) => [
     checkStatus(i),
-    <Link
-      to={`/Logbook/${i?._id}`}
-      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
-    >
-      {returnFullName(i)}{" "}
-      {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </Link>,
-    i?.location?.coordinates?.map((item) => item),
+    <span>
+      <Link
+        to={`/Logbook/${i?._id}`}
+        style={{
+          color: "blue",
+          textDecoration: "underline",
+          fontWeight: "900",
+          textTransform: "capitalize",
+        }}
+      >
+        {returnFullName(i)}
+      </Link>{" "}
+      <br />
+      <span style={{ textAlign: "left" }}>
+        {" "}
+        {i?.truck?.vehicleNumber ? i?.truck?.vehicleNumber : ""}
+      </span>
+    </span>,
+    <span>
+      {i?.locationInWord} <br />
+      {i?.lastSync && formatDateInEST(i?.lastSync)}
+    </span>,
     variantGiver(i?.violations),
-    <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
-      {i?.hos}
+    <div className="logbook-hos-status ready">
+      <p className="status"> {i?.hosStatus}</p>
+      <p className="timer"> {i?.hos} </p>
+      <div className="border-co" />
     </div>,
-    variantGiver(i?.driveLeft),
-    variantGiver(i?.shiftLeft),
-    <div className="w-[44px] h-[30px] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto">
-      {i?.cycleInHrs || 0} hr
+    variantGiver(formatSecondsToTime(i?.driveLeft)),
+    variantGiver(formatSecondsToTime(i?.shiftLeft)),
+    <div className="w-[auto] h-[auto] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto p-2">
+      {i?.cycleInHrs || 0} hr / {i?.cycleInDays} days
     </div>,
-    <div className="flex items-center gap-2">
-      <GoDotFill style={{ color: "#A44C4C" }} />
-      {i?.dutyStatus}
-      <img src={redisymbol} alt="" />
-    </div>,
+    CheckDeviceConnection(i?.isDeviceConnected),
   ]);
-  // =================================
-  // ======= all drvier's ============
+
   const allBody = allDrivers?.data?.docs?.map((i) => [
     checkStatus(i),
-    <Link
-      to={`/Logbook/${i?._id}`}
-      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
-    >
-      {returnFullName(i)}{" "}
-      {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </Link>,
-    i?.location?.coordinates?.map((item) => item),
+    <span>
+      <Link
+        to={`/Logbook/${i?._id}`}
+        style={{
+          color: "blue",
+          textDecoration: "underline",
+          fontWeight: "900",
+          textTransform: "capitalize",
+        }}
+      >
+        {returnFullName(i)}
+      </Link>{" "}
+      <br />
+      <span style={{ textAlign: "left" }}>
+        {" "}
+        {i?.truck?.vehicleNumber ? i?.truck?.vehicleNumber : ""}
+      </span>
+    </span>,
+    <span>
+      {i?.locationInWord} <br />
+      {i?.lastSync && formatDateInEST(i?.lastSync)}
+    </span>,
     variantGiver(i?.violations),
-    <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
-      {i?.hos}
+    <div className="logbook-hos-status ready">
+      <p className="status"> {i?.hosStatus}</p>
+      <p className="timer"> {i?.hos} </p>
+      <div className="border-co" />
     </div>,
-    variantGiver(i?.driveLeft),
-    variantGiver(i?.shiftLeft),
-    <div className="w-[44px] h-[30px] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto">
-      {i?.cycleInHrs || 0} hr
+    variantGiver(formatSecondsToTime(i?.driveLeft)),
+    variantGiver(formatSecondsToTime(i?.shiftLeft)),
+    <div className="w-[auto] h-[auto] rounded-2xl bg-[#32D29633] text-black flex justify-center items-center m-auto p-2">
+      {i?.cycleInHrs || 0} hr / {i?.cycleInDays} days
     </div>,
-    <div className="flex items-center gap-2">
-      <GoDotFill style={{ color: "#A44C4C" }} />
-      {i?.dutyStatus}
-      <img src={redisymbol} alt="" />
-    </div>,
+    CheckDeviceConnection(i?.isDeviceConnected),
   ]);
-  // =================================
+
+  let finalData;
+  if (selectedTab === "Active") {
+    finalData = tbody;
+  } else if (selectedTab === "Inactive") {
+    finalData = inactiveBody;
+  } else if (selectedTab === "All") {
+    finalData = allBody;
+  } else {
+    finalData = tbody;
+  }
+
+  let totalPages;
+  if (selectedTab === "Active") {
+    totalPages = activeDrivers?.data?.totalPages;
+  } else if (selectedTab === "Inactive") {
+    totalPages = inactiveBody?.data?.totalPages;
+  } else if (selectedTab === "All") {
+    totalPages = allDrivers?.data?.totalPages;
+  }
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTab]);
 
   return (
     <section className="p-5">
@@ -222,53 +401,20 @@ const Logbook = () => {
       />
       <Loader isLoading={loading} />
 
-      {selectedTab === "Active" && (
-        <div className="mt-5">
-          <TableLayout
-            thead={thead}
-            className="vehicle-table mt-5 mb-5"
-            tbody={tbody}
-          />
-          <Pagination
-            className={"mt-5"}
-            totalPages={activeDrivers?.data?.totalPages || 0}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        </div>
-      )}
+      <div className="mt-5">
+        <TableLayout
+          thead={thead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={finalData}
+        />
 
-      {selectedTab === "Inactive" && (
-        <div className="mt-5">
-          <TableLayout
-            thead={thead}
-            className="vehicle-table mt-5 mb-5"
-            tbody={inactiveBody}
-          />
-          <Pagination
-            className={"mt-5"}
-            totalPages={inactiveBody?.data?.totalPages || 0}
-            currentPage={currentPage1}
-            setCurrentPage={setCurrentPage1}
-          />
-        </div>
-      )}
-
-      {selectedTab === "All" && (
-        <div className="mt-5">
-          <TableLayout
-            thead={thead}
-            className="vehicle-table mt-5 mb-5"
-            tbody={allBody}
-          />
-          <Pagination
-            className={"mt-5"}
-            totalPages={allDrivers?.data?.totalPages || 0}
-            currentPage={currentPage2}
-            setCurrentPage={setCurrentPage2}
-          />
-        </div>
-      )}
+        <Pagination
+          className={"mt-5"}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </section>
   );
 };

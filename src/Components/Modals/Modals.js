@@ -606,20 +606,22 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
 
 const AddCompany = ({ handleClose, show, fetchApi }) => {
   const [loading, setLoading] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [dot, setDot] = useState("");
-  const [contact, setContact] = useState("");
-  const [address, setAddress] = useState("");
-  const [owner, setOwner] = useState("");
-  const [email, setEmail] = useState("");
+  const [payload, setPayload] = useState({
+    fullName: "",
+    dot: "",
+    contact: "",
+    address: "",
+    owner: "",
+    email: "",
+    password: "",
+  });
 
-  const payload = {
-    fullName,
-    dot,
-    contact,
-    address,
-    owner,
-    email,
+  const updatePayload = (e) => {
+    const { name, value } = e.target;
+    setPayload((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const submitHandler = (e) => {
@@ -648,23 +650,27 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">Company Name*</label>
                 <br />
-                <InputComponent
+                <input
+                  type="text"
                   placeholder="Enter company name"
-                  className="text-input merger-one"
-                  onChangeEvent={(e) => setFullName(e.target.value)}
-                  value={fullName}
-                  required={true}
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="fullName"
+                  value={payload.fullName}
                 />
               </div>
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">DOT*</label>
                 <br />
-                <InputComponent
+                <input
+                  type="text"
                   placeholder="Enter DOT"
                   className="text-input"
-                  onChangeEvent={(e) => setDot(e.target.value)}
-                  value={dot}
-                  required={true}
+                  required
+                  onChange={updatePayload}
+                  name="dot"
+                  value={payload.dot}
                 />
               </div>
             </div>
@@ -673,23 +679,29 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">Contact*</label>
                 <br />
-                <InputComponent
+
+                <input
+                  type="text"
                   placeholder="Enter company contact"
-                  className="text-input merger-one"
-                  onChangeEvent={(e) => setContact(e.target.value)}
-                  value={contact}
-                  required={true}
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="contact"
+                  value={payload.contact}
                 />
               </div>
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">Address*</label>
                 <br />
-                <InputComponent
+
+                <input
+                  type="text"
                   placeholder="Enter company address"
                   className="text-input"
-                  onChangeEvent={(e) => setAddress(e.target.value)}
-                  value={address}
-                  required={true}
+                  required
+                  onChange={updatePayload}
+                  name="address"
+                  value={payload.address}
                 />
               </div>
             </div>
@@ -698,27 +710,218 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">Owner*</label>
                 <br />
-                <InputComponent
+                <input
+                  type="text"
                   placeholder="Enter owner name"
-                  className="text-input merger-one"
-                  onChangeEvent={(e) => setOwner(e.target.value)}
-                  value={owner}
-                  required={true}
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="owner"
+                  value={payload.owner}
                 />
               </div>
               <div className="w-[50%]">
                 <label className="text-[#8E8F8F]">Email*</label>
                 <br />
-                <InputComponent
+                <input
+                  type="email"
                   placeholder="Enter owner email"
                   className="text-input"
-                  onChangeEvent={(e) => setEmail(e.target.value)}
-                  value={email}
-                  required={true}
-                  type={"email"}
+                  required
+                  onChange={updatePayload}
+                  name="email"
+                  value={payload.email}
                 />
               </div>
             </div>
+
+            <div className="gap-5 justify-between mt-5 flex ">
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Password*</label>
+                <br />
+                <input
+                  type="password"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="password"
+                  value={payload.password}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-5 gap-5 m-5">
+              <ButtonComponent
+                label={"Cancel"}
+                className={
+                  "text-[#F56C89] w-[180px] h-[45px] bg-white border border-[#F56C89]"
+                }
+                onClickEvent={handleClose}
+                type="button"
+              />
+
+              <ButtonComponent
+                label={"Add"}
+                className={
+                  "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                }
+                isLoading={loading}
+                type="submit"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+};
+
+// Edit Company Details
+const EditCompany = ({ handleClose, show, fetchApi  ,prevData}) => {
+  const [loading, setLoading] = useState(false);
+  const [payload, setPayload] = useState({
+    fullName: "",
+    dot: "",
+    contact: "",
+    address: "",
+    owner: "",
+    email: ""
+  });
+
+
+  useEffect(() => {
+    if(show && prevData){
+      setPayload({
+        fullName : prevData.fullName || "" ,
+        dot : prevData.dot || '',
+        contact : prevData.contact || "" ,
+        address : prevData.address || "" ,
+        owner : prevData.owner || "" ,
+        email : prevData.email || ""
+      })
+    }
+  },[show , prevData])
+
+  const updatePayload = (e) => {
+    const { name, value } = e.target;
+    setPayload((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    putApi(endPoints.company.updateDetail(prevData?._id), payload, {
+      successMsg: "updated !",
+      setLoading,
+      additionalFunctions: [fetchApi, handleClose],
+    });
+  };
+
+  return (
+    <Modal
+      centered
+      title="Edit Company"
+      open={show}
+      onCancel={handleClose}
+      footer={null}
+      width={680}
+    >
+      <div className="reset-password-modal">
+        <hr />
+        <form onSubmit={submitHandler}>
+          <div className="pl-5 pr-5">
+            <div className="gap-5 justify-between mt-5 flex ">
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Company Name*</label>
+                <br />
+                <input
+                  type="text"
+                  placeholder="Enter company name"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="fullName"
+                  value={payload.fullName}
+                />
+              </div>
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">DOT*</label>
+                <br />
+                <input
+                  type="text"
+                  placeholder="Enter DOT"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="dot"
+                  value={payload.dot}
+                />
+              </div>
+            </div>
+
+            <div className="gap-5 justify-between mt-5 flex ">
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Contact*</label>
+                <br />
+
+                <input
+                  type="text"
+                  placeholder="Enter company contact"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="contact"
+                  value={payload.contact}
+                />
+              </div>
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Address*</label>
+                <br />
+
+                <input
+                  type="text"
+                  placeholder="Enter company address"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="address"
+                  value={payload.address}
+                />
+              </div>
+            </div>
+
+            <div className="gap-5 justify-between mt-5 flex ">
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Owner*</label>
+                <br />
+                <input
+                  type="text"
+                  placeholder="Enter owner name"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="owner"
+                  value={payload.owner}
+                />
+              </div>
+              <div className="w-[50%]">
+                <label className="text-[#8E8F8F]">Email*</label>
+                <br />
+                <input
+                  type="email"
+                  placeholder="Enter owner email"
+                  className="text-input"
+                  required
+                  onChange={updatePayload}
+                  name="email"
+                  value={payload.email}
+                />
+              </div>
+            </div>
+
+      
 
             <div className="flex justify-center mt-5 gap-5 m-5">
               <ButtonComponent
@@ -3970,10 +4173,20 @@ const ViewProfile = ({ show, handleClose, data }) => {
       </div>
       <div className="flex items-center p-2 justify-between w-full bg-[#ECF5FF] hover:text-[#34B7C1] cursor-pointer">
         <div className="flex gap-2">
-          <img src={profile} alt="" />
+        <img
+            src={data?.profilePic}
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "100%",
+              objectFit: "cover",
+              objectPosition: "top",
+            }}
+            alt=""
+          />
           <div>
-            <p className="text-[#34B7C1] font-[700]">SRH LOGISTICS</p>
-            <p className="text-[#1F384C] font-[700]">DOT #3729312</p>
+          <p className="text-[#86E3CE] font-[700]"> {data?.owner} </p>
+            <p className="text-[#1F384C] font-[700]">DOT {data?.dot} </p>
           </div>
         </div>
         <div>
@@ -4544,6 +4757,7 @@ const EditHour = ({ show, handleClose }) => {
 };
 
 export {
+  EditCompany,
   CreateAdmin,
   CreateNewUser,
   ResetUserPassword,

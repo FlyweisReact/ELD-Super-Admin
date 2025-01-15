@@ -45,6 +45,7 @@ const apiRequest = async (method, url, payload = null, options = {}) => {
     additionalFunctions = [],
     successMsg,
     errorMsg,
+    showErr = true,
   } = options;
   if (setLoading) setLoading(true);
   try {
@@ -60,13 +61,14 @@ const apiRequest = async (method, url, payload = null, options = {}) => {
       (func) => func && typeof func === "function" && func(response?.data)
     );
   } catch (error) {
-    handleError(error, errorMsg);
-    if (setResponse) setResponse();
+    if (setResponse) setResponse(null);
+    if (showErr) {
+      handleError(error, errorMsg);
+    }
   } finally {
     if (setLoading) setLoading(false);
   }
 };
-
 export const getApi = (url, options) => apiRequest("get", url, null, options);
 export const postApi = (url, payload, options) =>
   apiRequest("post", url, payload, options);

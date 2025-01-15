@@ -1,5 +1,76 @@
 /** @format */
-/* Login Page */
+
+.custom-modal .custom-date-picker .react-datepicker__month-container {
+  width: 100%;
+}
+.custom-modal .custom-date-picker .react-datepicker__day-name {
+  font-weight: 600;
+}
+.custom-modal .custom-date-picker .react-datepicker__header {
+  padding: 4px 0;
+}
+.custom-modal .apply-date-range-btn {
+  background-color: #34b7c1;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  width: auto;
+  display: block;
+  margin: auto;
+}
+:where(.css-dev-only-do-not-override-d2lrxs).ant-dropdown,
+:where(.css-dev-only-do-not-override-d2lrxs).ant-dropdown-menu-submenu {
+  max-height: 300px !important;
+  overflow: auto;
+}
+
+.dashboard-cards {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  background-color: #fff;
+  border-radius: 10px;
+  max-width: 300px;
+  width: 100%;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.report-card-container {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 20px;
+}
+
+.report-card-container .cards {
+  width: 100%;
+  padding: 2rem 20px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(201, 209, 232);
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: rgba(147, 158, 185, 0.18) 0px 4px 35px;
+  cursor: pointer;
+}
+.report-card-container .cards:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.report-card-container .cards img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  object-position: center;
+}
+.report-card-container .cards p {
+  color: rgb(90, 101, 127);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
 .login-page {
   background: conic-gradient(
     from -89.75deg at 50% 50%,
@@ -49,7 +120,6 @@
   padding: 1.5rem 2.5rem;
 }
 
-/* Navbar */
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid rgb(201, 209, 232);
@@ -73,6 +143,7 @@
 }
 .navbar .right-div button {
   border: 1px solid rgb(52 183 193);
+  border: 1px solid #86e3ce;
   padding: 10px 1.5rem;
   border-radius: 0.5rem;
   display: flex;
@@ -80,6 +151,7 @@
   align-items: center;
   font-weight: 600;
   color: rgb(52 183 193);
+  color: #86e3ce;
 }
 
 .layout {
@@ -103,6 +175,41 @@
 
 .location-section .map {
   flex: 1;
+}
+.report-card-container {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 20px;
+}
+
+.report-card-container .cards {
+  width: 100%;
+  padding: 2rem 20px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(201, 209, 232);
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: rgba(147, 158, 185, 0.18) 0px 4px 35px;
+  cursor: pointer;
+}
+.report-card-container .cards:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.report-card-container .cards img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  object-position: center;
+}
+.report-card-container .cards p {
+  color: rgb(90, 101, 127);
+  font-weight: 700;
+  font-size: 1.125rem;
 }
 
 .report-cards .card img {
@@ -200,11 +307,11 @@
 }
 
 .alert-date-filter .input-groups .date i.fa-xmark {
-  color: #1890ff;
+  color: #86e3ce;
 }
 .custom-modal .ant-modal-content {
   background-color: #f8faff;
-  border: 2px solid #1890ff;
+  border: 2px solid #86e3ce;
 }
 .custom-modal .ant-modal-header {
   background-color: transparent !important;
@@ -229,12 +336,15 @@
 }
 
 .custom-modal .custom-date-picker .days-pickers .item {
-  background-color: #e8f4ff;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
   padding: 10px;
+  cursor: pointer;
+}
+.custom-modal .custom-date-picker .days-pickers .item.active {
+  background-color: #e8f4ff;
 }
 .custom-modal .custom-date-picker .days-pickers .item .selected {
   margin: 0;
@@ -269,29 +379,14 @@
   padding: 4px 0;
 }
 .custom-modal .apply-date-range-btn {
-  background-color: #34b7c1;
+  background-color: #86e3ce;
   border-radius: 10px;
-  color: #fff;
+  color: #000;
   font-weight: 600;
   padding: 10px;
   width: auto;
   display: block;
   margin: auto;
-}
-:where(.css-dev-only-do-not-override-d2lrxs).ant-dropdown,
-:where(.css-dev-only-do-not-override-d2lrxs).ant-dropdown-menu-submenu {
-  max-height: 300px !important;
-  overflow: auto;
-}
-
-.dashboard-cards {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  background-color: #fff;
-  border-radius: 10px;
-  max-width: 300px;
-  width: 100%;
-  padding: 20px;
-  cursor: pointer;
 }
 
 .report-chart-container {
@@ -370,8 +465,10 @@
 .report-btn-container .btn {
   max-width: 163px;
   padding: 10px;
-  background-color: #34b7c1;
-  color: #fff;
+  background-color: #86e3ce;
+  color: #000;
+  border: 1px solid #86e3ce;
+  font-weight: 600;
   width: 100%;
   border-radius: 5px;
   font-size: 16px;
@@ -453,41 +550,6 @@
   border-radius: 5px;
 }
 
-.report-card-container {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-gap: 20px;
-}
-
-.report-card-container .cards {
-  width: 100%;
-  padding: 2rem 20px;
-  background-color: rgb(255, 255, 255);
-  border: 1px solid rgb(201, 209, 232);
-  border-radius: 0.75rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: rgba(147, 158, 185, 0.18) 0px 4px 35px;
-  cursor: pointer;
-}
-.report-card-container .cards:hover {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.report-card-container .cards img {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-  object-position: center;
-}
-.report-card-container .cards p {
-  color: rgb(90, 101, 127);
-  font-weight: 700;
-  font-size: 1.125rem;
-}
 .emoji-picker {
   position: absolute !important;
   left: 0px;
@@ -519,4 +581,206 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.logbook-dutystatus {
+  width: auto;
+  height: auto;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff8ea;
+  border: 1px solid #fff8ea;
+  border-radius: 4px;
+}
+.logbook-dutystatus p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.logbook-dutystatus.on-duty p {
+  color: #1dbc60;
+}
+.logbook-dutystatus.off-duty {
+  color: #eb5757;
+}
+.logbook-dutystatus.drive {
+  color: #fbb500;
+}
+.logbook-dutystatus.sb {
+  color: #1890ff;
+}
+
+.logbook-graph {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: flex-start;
+  padding: 10px;
+}
+.logbook-graph .chart {
+  width: 360px;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  cursor: pointer;
+}
+.logbook-graph .chart .title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.logbook-graph .chart_liner {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.logbook-graph .no_data {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #5a657f;
+  font-weight: 600;
+}
+
+.logbook-device-connect {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+.logbook-device-connect .color-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #a44c4c;
+  display: inline-block;
+  border-radius: 100%;
+}
+.logbook-device-connect.disconnected .color-dot {
+  background-color: orangered;
+}
+.logbook-device-connect.connected .color-dot {
+  background-color: #1dbc60;
+}
+
+.logbook-hos-status {
+  width: 70px;
+  height: 70px;
+  border: 5px solid #ececec; /* Outer border */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 100%;
+  margin: auto;
+}
+
+.logbook-hos-status .status {
+  font-size: 10px;
+  color: #5a6557;
+  margin: 0;
+  font-weight: 600;
+}
+
+.logbook-hos-status .timer {
+  margin: 0;
+  font-size: 12px;
+  color: #b3bdd6;
+  font-weight: 900;
+}
+
+/* .mySwiper{
+  position: relative;
+}
+.swiper-custom-navigation .next-nav-btn{
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  z-index: 5;
+  border: 1px solid black;
+  width: 100px;
+  height: 20px;
+  background-color: #fff;
+
+} */
+
+.swiper-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+/* .swiper-container .next-nav-btn {
+  position: absolute;
+  top: 40%;
+  cursor: pointer;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  object-position: center;
+  background-color: #fff;
+} */
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 20px !important;
+}
+.swiper-button-next {
+  right: 0px !important;
+}
+.swiper-button-prev {
+  left: 0px !important;
+}
+
+.vehicle-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+.vehicle-gallery .item {
+  height: 220px;
+  width: 180px;
+  position: relative;
+  cursor: pointer;
+}
+.vehicle-gallery .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 0.5rem;
+}
+.vehicle-gallery .add_btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 2px;
+  bottom: 2px;
+}
+.vehicle-gallery .add-box {
+  background-color: #34b7c133;
 }

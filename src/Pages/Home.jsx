@@ -55,7 +55,6 @@ const Home = () => {
       setResponse: setData,
     });
   };
-  console.log(data);
 
   return (
     <>

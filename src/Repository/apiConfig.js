@@ -75,6 +75,7 @@ const endPoints = {
     create: "api/v1/admin/Company/addCompany",
     delete: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
     getById: (id) => `api/v1/admin/Company/getCompany/${id}`,
+    updateDetail : (id) => `api/v1/admin/Company/updateCompany/${id}`
   },
   activeDTC: {
     getAll: ({ truck = "", page = 1, limit = 10 }) =>
@@ -157,7 +158,7 @@ const endPoints = {
   companies: {
     getAll: ({ page = 1, limit = 10 }) =>
       `api/v1/admin/Company/allCompany?limit=${limit}&page=${page}`,
-    getDetail: (id) => `api/v1/admin/Company/getCompany/${id}`,
+    getDetail: `api/v1/admin/Company/getCompany/${getCompanyId()}`,
     remove: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
   },
   alert: {

@@ -139,6 +139,21 @@ const downloadReport = (handlePrint) => {
   });
 };
 
+const getCurrentTimeInEST12Hour = () => {
+  // Get the current time in UTC
+  const now = new Date();
+
+  // Convert the UTC time to EST using Intl.DateTimeFormat
+  const estFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", // EST timezone
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // 12-hour format
+  });
+
+  return estFormatter.format(now);
+};
+
 export {
   tokenSaver,
   dateFormatter,
@@ -149,5 +164,6 @@ export {
   firebaseSignOut,
   convertSecondsToTimeFormat,
   convertSecondsToHHMM,
-  downloadReport
+  downloadReport,
+  getCurrentTimeInEST12Hour,
 };

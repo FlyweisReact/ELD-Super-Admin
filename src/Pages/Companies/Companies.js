@@ -5,16 +5,19 @@ import React, { useCallback, useEffect, useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { Pagination, SectionHeading } from "../../Components/HelpingComponent";
-import { AddCompany } from "../../Components/Modals/Modals";
+import { AddCompany, EditCompany } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { deleteApi, getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
+import { MdEdit } from "react-icons/md";
 
 const Companies = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({});
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [prevData, setPrevData] = useState(null);
 
   const fetchData = useCallback(() => {
     getApi(endPoints.companies.getAll({ page }), {
@@ -64,6 +67,20 @@ const Companies = () => {
             ),
             key: "0",
           },
+          {
+            label: (
+              <div
+                className="text-[#4635B1] cursor-pointer font-bold flex items-center gap-1"
+                onClick={() => {
+                  setPrevData(i);
+                  setIsEdit(true);
+                }}
+              >
+                <MdEdit /> Edit
+              </div>
+            ),
+            key: "0",
+          },
         ],
       }}
       trigger={["click"]}
@@ -80,6 +97,12 @@ const Companies = () => {
         handleClose={() => setOpen(false)}
         show={open}
         fetchApi={fetchData}
+      />
+      <EditCompany
+        show={isEdit}
+        handleClose={() => setIsEdit(false)}
+        fetchApi={fetchData}
+        prevData={prevData}
       />
       <SectionHeading title={"Companies"} />
       <div className="flex gap-2 driver-actions-btn mt-3 justify-end">

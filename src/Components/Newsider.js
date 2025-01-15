@@ -38,22 +38,14 @@ const sideMenu = [
     ],
   },
   {
-    link: "Dashcams",
-    title: "Dashcams",
-    icon: dascams,
-  },
-  {
     link: "Reports",
     title: "Reports",
     icon: report,
   },
   {
-    title: "IFTA",
+    link: "Iftareports",
+    title: "IFTA Reports",
     icon: ifta,
-    subLinks: [
-      { link: "Iftatrips", title: "IFTA Trips" },
-      { link: "Iftareports", title: "IFTA Reports" },
-    ],
   },
   {
     title: "Vehicles",
@@ -131,7 +123,7 @@ const Newsidebar = () => {
             {!open ? (
               <HiMenuAlt3
                 size={26}
-                style={{ color: "#34B7C1" }}
+                style={{ color: "#86E3CE" }}
                 className="cursor-pointer"
                 onClick={() => setOpen(!open)}
               />
@@ -140,7 +132,7 @@ const Newsidebar = () => {
                 <div className="flex justify-end">
                   <HiMenuAlt3
                     size={26}
-                    style={{ color: "#34B7C1" }}
+                    style={{ color: "#86E3CE" }}
                     className="cursor-pointer"
                     onClick={() => setOpen(!open)}
                   />

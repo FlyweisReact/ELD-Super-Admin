@@ -105,7 +105,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/Dashboard/:id", element: <Dashboard /> },
       { path: "/Logbook", element: <Logbook /> },
       { path: "/Logbook/:id", element: <LogbookDetails /> },
       { path: "/location", element: <Location /> },

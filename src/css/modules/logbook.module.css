@@ -40,12 +40,46 @@
   width: 20%;
 }
 .chart {
-  width: 70%;
+  width: 100%;
 }
 .chart_container {
   width: 100%;
   position: relative;
   padding: 0 20px;
+}
+
+.main_chart_container {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+.main_chart_container .chart_container {
+  width: 97%;
+}
+.main_chart_container .time_container {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.main_chart_container .time_container p {
+  font-size: 12px;
+  font-weight: 600;
+}
+.main_chart_container .time_container p.off_time {
+  margin-top: 15px;
+}
+.main_chart_container .time_container p.sb_time {
+  margin-bottom: 20px;
+}
+.main_chart_container .time_container p.d_time {
+  margin-bottom: 30px;
+}
+.main_chart_container .time_container p.on_time {
+  margin-bottom: 40px;
 }
 
 .date_handler .go_back {
@@ -81,13 +115,26 @@
 }
 
 .recap_div {
-  background-color: #e8f4ff;
-  border: 1px solid rgb(201, 209, 232);
+  background-color: #86e3ce;
+  border: 1px solid #86e3ce;
   border-radius: 10px;
+  margin-top: 10px;
+  width: 100%;
 }
 .desc {
   font-size: 12px;
   font-weight: 600;
+}
+
+.title_feild {
+  font-size: 14px;
+  font-weight: 900;
+  color: #000;
+}
+.value_field {
+  font-size: 14px;
+  font-weight: 900;
+  color: #86e3ce;
 }
 
 @media (max-width: 768px) {
@@ -112,6 +159,12 @@
     width: 100%;
   }
   .recap_div {
+    width: 100%;
+  }
+  .signature_btn{
+    width: 100%;
+  }
+  .all_fields{
     width: 100%;
   }
 }
