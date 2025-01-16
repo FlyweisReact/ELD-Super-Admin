@@ -75,7 +75,7 @@ const endPoints = {
     create: "api/v1/admin/Company/addCompany",
     delete: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
     getById: (id) => `api/v1/admin/Company/getCompany/${id}`,
-    updateDetail : (id) => `api/v1/admin/Company/updateCompany/${id}`
+    updateDetail: (id) => `api/v1/admin/Company/updateCompany/${id}`,
   },
   activeDTC: {
     getAll: ({ truck = "", page = 1, limit = 10 }) =>
@@ -101,6 +101,9 @@ const endPoints = {
     createVehicle: "api/v1/admin/Truck/addTruck",
     editVehicleDetails: (id) => `api/v1/admin/Truck/updateTruckDetails/${id}`,
     getVehicleDetail: (id) => `api/v1/admin/Truck/getTruck/${id}`,
+
+    getAllVehicles: (query = "") =>
+      `api/v1/admin/Truck/getAllTruck?company=${getCompanyId()}&${query}`,
   },
   drivers: {
     getAllDrivers: ({ page = 1, limit = 10 }) =>
@@ -160,6 +163,7 @@ const endPoints = {
       `api/v1/admin/Company/allCompany?limit=${limit}&page=${page}`,
     getDetail: `api/v1/admin/Company/getCompany/${getCompanyId()}`,
     remove: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
+    updateDetail: (id) => `api/v1/admin/Company/updateCompany/${id}`,
   },
   alert: {
     getAll: ({ page = 1, limit = 10 }) =>
@@ -187,11 +191,15 @@ const endPoints = {
     getRecap: (id) =>
       `api/v1/user/getAllDriverLogFromCurrentMonthByDriverId/${id}`,
     editLog: (id) => `api/v1/user/updateElogForm/${id}`,
-    allCompanyLog: ({ page = 1, limit = 10, date = '' }) =>
-      `api/v1/admin/AllElogForm?company=${getCompanyId()}&page=${page}&limit=${limit}&date=${date}`,
+
     tripHistory: `api/v1/admin/Truck/getAllTruck?company=${getCompanyId()}`,
     tripAvg: `api/v1/corporate/Truck/getAllTruckDashboard?company=${getCompanyId()}`,
+    allCompanyLog: (query = "") =>
+      `api/v1/admin/AllElogForm?company=${getCompanyId()}&${query}`,
   },
+
+  getTrackingLinks: (query = "") =>
+    `api/v1/admin/getDriverLogDocs?company=${getCompanyId()}&${query}`,
 };
 
 export default endPoints;

@@ -1,5 +1,5 @@
 /** @format */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getApi, postApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { Modal, Drawer } from "antd";
@@ -606,6 +606,7 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
 
 const AddCompany = ({ handleClose, show, fetchApi }) => {
   const [loading, setLoading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("Company Details");
   const [payload, setPayload] = useState({
     fullName: "",
     dot: "",
@@ -614,7 +615,29 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
     owner: "",
     email: "",
     password: "",
+    officeAddress1: "",
+    officeAddress: "",
+    officeCity: "",
+    officeState: "",
+    officeCountry: "",
+    officeZipCode: "",
+    shippingAddress1: "",
+    shippingAddress: "",
+    shippingCity: "",
+    shippingState: "",
+    shippingCountry: "",
+    shippingZipCode: "",
+    terminalAddress1: "",
+    terminalAddress: "",
+    terminalCity: "",
+    terminalState: "",
+    terminalCountry: "",
+    terminalZipCode: "",
   });
+
+  const nextHandler = (value) => {
+    setSelectedTab(value);
+  };
 
   const updatePayload = (e) => {
     const { name, value } = e.target;
@@ -633,6 +656,25 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
     });
   };
 
+  const tabsOptions = [
+    {
+      value: "Company Details",
+      label: "Company Details",
+    },
+    {
+      value: "Office Address",
+      label: "Office Address",
+    },
+    {
+      value: "Shipping Address",
+      label: "Shipping Address",
+    },
+    {
+      value: "Terminal Address",
+      label: "Terminal Address",
+    },
+  ];
+
   return (
     <Modal
       centered
@@ -640,136 +682,483 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
       open={show}
       onCancel={handleClose}
       footer={null}
-      width={680}
+      width={1000}
     >
       <div className="reset-password-modal">
         <hr />
+
         <form onSubmit={submitHandler}>
           <div className="pl-5 pr-5">
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Company Name*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter company name"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="fullName"
-                  value={payload.fullName}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">DOT*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter DOT"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="dot"
-                  value={payload.dot}
-                />
-              </div>
-            </div>
-
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Contact*</label>
-                <br />
-
-                <input
-                  type="text"
-                  placeholder="Enter company contact"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="contact"
-                  value={payload.contact}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Address*</label>
-                <br />
-
-                <input
-                  type="text"
-                  placeholder="Enter company address"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="address"
-                  value={payload.address}
-                />
-              </div>
-            </div>
-
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Owner*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter owner name"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="owner"
-                  value={payload.owner}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Email*</label>
-                <br />
-                <input
-                  type="email"
-                  placeholder="Enter owner email"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="email"
-                  value={payload.email}
-                />
-              </div>
-            </div>
-
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Password*</label>
-                <br />
-                <input
-                  type="password"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="password"
-                  value={payload.password}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-center mt-5 gap-5 m-5">
-              <ButtonComponent
-                label={"Cancel"}
-                className={
-                  "text-[#F56C89] w-[180px] h-[45px] bg-white border border-[#F56C89]"
-                }
-                onClickEvent={handleClose}
-                type="button"
-              />
-
-              <ButtonComponent
-                label={"Add"}
-                className={
-                  "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
-                }
-                isLoading={loading}
-                type="submit"
-              />
+            <div
+              className="add-steps mt-2"
+              style={{ justifyContent: "center" }}
+            >
+              {tabsOptions?.map((item, index) => (
+                <div
+                  className={`step ${
+                    selectedTab === item.value ? "active" : ""
+                  } `}
+                  style={{ width: "24%" }}
+                  key={item?.value}
+                >
+                  <p className="count" style={{ fontSize: "12px" }}>
+                    {" "}
+                    {index + 1}{" "}
+                  </p>
+                  <p className="title" style={{ fontSize: "12px" }}>
+                    {" "}
+                    {item?.label}{" "}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
+
+          {selectedTab === "Company Details" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Company Name*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter company name"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="fullName"
+                    value={payload.fullName}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">DOT*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter DOT"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="dot"
+                    value={payload.dot}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Contact*</label>
+                  <br />
+
+                  <input
+                    type="text"
+                    placeholder="Enter company contact"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="contact"
+                    value={payload.contact}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Address*</label>
+                  <br />
+
+                  <input
+                    type="text"
+                    placeholder="Enter company address"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="address"
+                    value={payload.address}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Owner*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter owner name"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="owner"
+                    value={payload.owner}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Email*</label>
+                  <br />
+                  <input
+                    type="email"
+                    placeholder="Enter owner email"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="email"
+                    value={payload.email}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">
+                    Password* (min length : 6)
+                  </label>
+                  <br />
+                  <input
+                    type="password"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="password"
+                    value={payload.password}
+                    minLength={6}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Cancel"}
+                  className={
+                    "text-[#F56C89] w-[180px] h-[45px] bg-white border border-[#F56C89]"
+                  }
+                  onClickEvent={handleClose}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Office Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Office Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeAddress1}
+                    name="officeAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeAddress}
+                    name="officeAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeCity}
+                    name="officeCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeState}
+                    name="officeState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeCountry}
+                    name="officeCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeZipCode}
+                    name="officeZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Company Details")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Shipping Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Shipping Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingAddress1}
+                    name="shippingAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingAddress}
+                    name="shippingAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingCity}
+                    name="shippingCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingState}
+                    name="shippingState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingCountry}
+                    name="shippingCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingZipCode}
+                    name="shippingZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Office Address")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Terminal Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Terminal Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalAddress1}
+                    name="terminalAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalAddress}
+                    name="terminalAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalCity}
+                    name="terminalCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalState}
+                    name="terminalState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalCountry}
+                    name="terminalCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalZipCode}
+                    name="terminalZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Shipping Address")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Submit"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"submit"}
+                  isLoading={loading}
+                />
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </Modal>
@@ -777,30 +1166,66 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
 };
 
 // Edit Company Details
-const EditCompany = ({ handleClose, show, fetchApi  ,prevData}) => {
+const EditCompany = ({ handleClose, show, fetchApi, prevData }) => {
   const [loading, setLoading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("Company Details");
   const [payload, setPayload] = useState({
     fullName: "",
     dot: "",
     contact: "",
     address: "",
     owner: "",
-    email: ""
+    email: "",
+    officeAddress1: "",
+    officeAddress: "",
+    officeCity: "",
+    officeState: "",
+    officeCountry: "",
+    officeZipCode: "",
+    shippingAddress1: "",
+    shippingAddress: "",
+    shippingCity: "",
+    shippingState: "",
+    shippingCountry: "",
+    shippingZipCode: "",
+    terminalAddress1: "",
+    terminalAddress: "",
+    terminalCity: "",
+    terminalState: "",
+    terminalCountry: "",
+    terminalZipCode: "",
   });
 
-
   useEffect(() => {
-    if(show && prevData){
+    if (show && prevData) {
       setPayload({
-        fullName : prevData.fullName || "" ,
-        dot : prevData.dot || '',
-        contact : prevData.contact || "" ,
-        address : prevData.address || "" ,
-        owner : prevData.owner || "" ,
-        email : prevData.email || ""
-      })
+        fullName: prevData.fullName || "",
+        dot: prevData.dot || "",
+        contact: prevData.contact || "",
+        address: prevData.address || "",
+        owner: prevData.owner || "",
+        email: prevData.email || "",
+        officeAddress1: prevData.officeAddress1 || "",
+        officeAddress: prevData.officeAddress || "",
+        officeCity: prevData.officeCity || "",
+        officeState: prevData.officeState || "",
+        officeCountry: prevData.officeCountry || "",
+        officeZipCode: prevData.officeZipCode || "",
+        shippingAddress1: prevData.shippingAddress1 || "",
+        shippingAddress: prevData.shippingAddress || "",
+        shippingCity: prevData.shippingCity || "",
+        shippingState: prevData.shippingState || "",
+        shippingCountry: prevData.shippingCountry || "",
+        shippingZipCode: prevData.shippingZipCode || "",
+        terminalAddress1: prevData.terminalAddress1 || "",
+        terminalAddress: prevData.terminalAddress || "",
+        terminalCity: prevData.terminalCity || "",
+        terminalState: prevData.terminalState || "",
+        terminalCountry: prevData.terminalCountry || "",
+        terminalZipCode: prevData.terminalZipCode || "",
+      });
     }
-  },[show , prevData])
+  }, [show, prevData]);
 
   const updatePayload = (e) => {
     const { name, value } = e.target;
@@ -819,6 +1244,29 @@ const EditCompany = ({ handleClose, show, fetchApi  ,prevData}) => {
     });
   };
 
+  const tabsOptions = [
+    {
+      value: "Company Details",
+      label: "Company Details",
+    },
+    {
+      value: "Office Address",
+      label: "Office Address",
+    },
+    {
+      value: "Shipping Address",
+      label: "Shipping Address",
+    },
+    {
+      value: "Terminal Address",
+      label: "Terminal Address",
+    },
+  ];
+
+  const nextHandler = (value) => {
+    setSelectedTab(value);
+  };
+
   return (
     <Modal
       centered
@@ -826,123 +1274,465 @@ const EditCompany = ({ handleClose, show, fetchApi  ,prevData}) => {
       open={show}
       onCancel={handleClose}
       footer={null}
-      width={680}
+      width={1000}
     >
       <div className="reset-password-modal">
         <hr />
         <form onSubmit={submitHandler}>
           <div className="pl-5 pr-5">
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Company Name*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter company name"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="fullName"
-                  value={payload.fullName}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">DOT*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter DOT"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="dot"
-                  value={payload.dot}
-                />
-              </div>
-            </div>
-
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Contact*</label>
-                <br />
-
-                <input
-                  type="text"
-                  placeholder="Enter company contact"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="contact"
-                  value={payload.contact}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Address*</label>
-                <br />
-
-                <input
-                  type="text"
-                  placeholder="Enter company address"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="address"
-                  value={payload.address}
-                />
-              </div>
-            </div>
-
-            <div className="gap-5 justify-between mt-5 flex ">
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Owner*</label>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter owner name"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="owner"
-                  value={payload.owner}
-                />
-              </div>
-              <div className="w-[50%]">
-                <label className="text-[#8E8F8F]">Email*</label>
-                <br />
-                <input
-                  type="email"
-                  placeholder="Enter owner email"
-                  className="text-input"
-                  required
-                  onChange={updatePayload}
-                  name="email"
-                  value={payload.email}
-                />
-              </div>
-            </div>
-
-      
-
-            <div className="flex justify-center mt-5 gap-5 m-5">
-              <ButtonComponent
-                label={"Cancel"}
-                className={
-                  "text-[#F56C89] w-[180px] h-[45px] bg-white border border-[#F56C89]"
-                }
-                onClickEvent={handleClose}
-                type="button"
-              />
-
-              <ButtonComponent
-                label={"Add"}
-                className={
-                  "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
-                }
-                isLoading={loading}
-                type="submit"
-              />
+            <div
+              className="add-steps mt-2"
+              style={{ justifyContent: "center" }}
+            >
+              {tabsOptions?.map((item, index) => (
+                <div
+                  className={`step cursor-pointer ${
+                    selectedTab === item.value ? "active" : ""
+                  } `}
+                  style={{ width: "24%" }}
+                  key={item?.value}
+                  onClick={() => nextHandler(item.value)}
+                >
+                  <p className="count" style={{ fontSize: "12px" }}>
+                    {" "}
+                    {index + 1}{" "}
+                  </p>
+                  <p className="title" style={{ fontSize: "12px" }}>
+                    {" "}
+                    {item?.label}{" "}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
+
+          {selectedTab === "Company Details" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Company Name*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter company name"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="fullName"
+                    value={payload.fullName}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">DOT*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter DOT"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="dot"
+                    value={payload.dot}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Contact*</label>
+                  <br />
+
+                  <input
+                    type="text"
+                    placeholder="Enter company contact"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="contact"
+                    value={payload.contact}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Address*</label>
+                  <br />
+
+                  <input
+                    type="text"
+                    placeholder="Enter company address"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="address"
+                    value={payload.address}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Owner*</label>
+                  <br />
+                  <input
+                    type="text"
+                    placeholder="Enter owner name"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="owner"
+                    value={payload.owner}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Email*</label>
+                  <br />
+                  <input
+                    type="email"
+                    placeholder="Enter owner email"
+                    className="text-input"
+                    required
+                    onChange={updatePayload}
+                    name="email"
+                    value={payload.email}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Cancel"}
+                  className={
+                    "text-[#F56C89] w-[180px] h-[45px] bg-white border border-[#F56C89]"
+                  }
+                  onClickEvent={handleClose}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Office Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Office Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeAddress1}
+                    name="officeAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeAddress}
+                    name="officeAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeCity}
+                    name="officeCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeState}
+                    name="officeState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeCountry}
+                    name="officeCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.officeZipCode}
+                    name="officeZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Company Details")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Shipping Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Shipping Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingAddress1}
+                    name="shippingAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingAddress}
+                    name="shippingAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingCity}
+                    name="shippingCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingState}
+                    name="shippingState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingCountry}
+                    name="shippingCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.shippingZipCode}
+                    name="shippingZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Office Address")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Continue"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"button"}
+                  onClickEvent={() => nextHandler("Terminal Address")}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTab === "Terminal Address" && (
+            <div className="pl-5 pr-5">
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 1</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalAddress1}
+                    name="terminalAddress1"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]"> Address Line 2</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalAddress}
+                    name="terminalAddress"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">City</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalCity}
+                    name="terminalCity"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">State</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalState}
+                    name="terminalState"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="gap-5 justify-between mt-5 flex ">
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Country</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalCountry}
+                    name="terminalCountry"
+                    onChange={updatePayload}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <label className="text-[#8E8F8F]">Zipcode</label>
+                  <br />
+                  <input
+                    type="text"
+                    className="text-input"
+                    required
+                    value={payload.terminalZipCode}
+                    name="terminalZipCode"
+                    onChange={updatePayload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-5 gap-5 m-5">
+                <ButtonComponent
+                  label={"Go Back"}
+                  className={
+                    "text-[#939Eb9] w-[180px] h-[45px] bg-white border border-[#939Eb9]"
+                  }
+                  onClickEvent={() => nextHandler("Shipping Address")}
+                  type="button"
+                />
+
+                <ButtonComponent
+                  label={"Submit"}
+                  className={
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-semibold flex justify-center items-center gap-2"
+                  }
+                  type={"submit"}
+                  isLoading={loading}
+                />
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </Modal>
@@ -1533,6 +2323,7 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
     fd.append(`image`, image);
   });
 
+
   const submitHandler = (e) => {
     e.preventDefault();
     postApi(endPoints.vehicles.createVehicle, fd, {
@@ -1674,7 +2465,6 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
                   <select
                     className="text-select"
                     onChange={(e) => setTruckType(e.target.value)}
-                    required
                   >
                     <option value=""></option>
                     <option value="Semi-Trailer Truck">
@@ -1859,7 +2649,7 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                   }
                   isLoading={loading}
                   type="submit"
@@ -1929,7 +2719,7 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86E3CE] font-bold w-[180px] h-[45px]  text-black flex justify-center items-center gap-2"
                   }
                   isLoading={loading}
                   type="submit"
@@ -2021,7 +2811,7 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
                 <ButtonComponent
                   label={"Submit"}
                   className={
-                    "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86E3CE] font-bold w-[180px] h-[45px]  text-black flex justify-center items-center gap-2"
                   }
                   isLoading={loading}
                   type="submit"
@@ -2342,16 +3132,16 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
           {step === 1 && (
             <form onSubmit={submitHandler}>
               {/* <div className="upload-img-svg mt-4">
-                  <img
-                    src="https://www.svgrepo.com/show/382101/male-avatar-boy-face-man-user.svg"
-                    alt=""
-                  />
-                  <i
-                    className="fa-solid fa-pen"
-                    onClick={() => uploadImg()}
-                  ></i>
-                  <input type="file" id="file" style={{ display: "none" }} />
-                </div> */}
+                    <img
+                      src="https://www.svgrepo.com/show/382101/male-avatar-boy-face-man-user.svg"
+                      alt=""
+                    />
+                    <i
+                      className="fa-solid fa-pen"
+                      onClick={() => uploadImg()}
+                    ></i>
+                    <input type="file" id="file" style={{ display: "none" }} />
+                  </div> */}
 
               <div className="flex-inputs">
                 <div className="w-[50%]">
@@ -3349,7 +4139,7 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
   const [id, setId] = useState("info");
   const [driver, setDriver] = useState(null);
   const [trailerId, setTrailerId] = useState(null);
-  const [destinationLocation, setDestinationLocation] = useState(null);
+  const [destinationLocation, setDestinationLocation] = useState("");
   const [distance, setDistance] = useState(null);
   const [milesDriven, setMilesDriven] = useState(null);
   const [cycleType, setCycleType] = useState(null);
@@ -3362,22 +4152,290 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
   const [twentyForHourStartTime, setTwentyForHourStartTime] = useState(null);
   const [odometerReading, setOdometerReading] = useState(null);
   const [officeAddress, setOfficeAddress] = useState(null);
-  const [officeCity, setOfficeCity] = useState(null);
-  const [officeZip, setOfficeZip] = useState(null);
-  const [officeState, setOfficeState] = useState(null);
-  const [officeCountry, setOfficeCountry] = useState(null);
-  const [terminalAddress, setTerminalAddress] = useState(null);
-  const [terminalCity, setTerminalCity] = useState(null);
-  const [terminalZip, setTerminalZip] = useState(null);
-  const [terminalState, setTerminalState] = useState(null);
-  const [terminalCountry, setTerminalCountry] = useState(null);
+  const [officeCity, setOfficeCity] = useState("");
+  const [officeZip, setOfficeZip] = useState("");
+  const [officeState, setOfficeState] = useState("");
+  const [officeCountry, setOfficeCountry] = useState("");
+  const [terminalAddress, setTerminalAddress] = useState("");
+  const [terminalCity, setTerminalCity] = useState("");
+  const [terminalZip, setTerminalZip] = useState("");
+  const [terminalState, setTerminalState] = useState("");
+  const [terminalCountry, setTerminalCountry] = useState("");
   const [comment, setComment] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const inputRef = useRef(null);
+  const officeAddRef = useRef(null);
+  const cityRef = useRef(null);
+  const postalRef = useRef(null);
+  const stateRef = useRef(null);
+  const countryRef = useRef(null);
+  const terminalAddressRef = useRef(null);
+  const terminalCityRef = useRef(null);
+  const terminalZipRef = useRef(null);
+  const terminalStateRef = useRef(null);
+  const terminalCountryRef = useRef(null);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = inputRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"], // Restrict autocomplete to city results
+          }
+        );
+
+        // Listen for place selection
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          // Update the state with the formatted address
+          setDestinationLocation(place?.formatted_address || "");
+        });
+
+        // Cleanup the event listener
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [inputRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = officeAddRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["address"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setOfficeAddress(place?.formatted_address || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [officeAddRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = cityRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setOfficeCity(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [cityRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = postalRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["postal_code"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setOfficeZip(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [postalRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = stateRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setOfficeState(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [stateRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = countryRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["country"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setOfficeCountry(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [countryRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = terminalAddressRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["address"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setTerminalAddress(place?.formatted_address || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [terminalAddressRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = terminalCityRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setTerminalCity(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [terminalCityRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = terminalZipRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["postal_code"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setTerminalZip(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [terminalZipRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = terminalStateRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setTerminalState(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [terminalStateRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = terminalCountryRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["country"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setTerminalCountry(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [terminalCountryRef, show]);
 
   useEffect(() => {
     if (show && data) {
       setDriver(data?.driver?._id);
-      setDestinationLocation(data?.destinationLocation);
+      setDestinationLocation(data?.destinationLocation || "");
       setDistance(data?.distance);
       setMilesDriven(data?.milesDriven);
       setCycleType(data?.cycleType);
@@ -3497,13 +4555,13 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                         Destination Location
                       </label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setDestinationLocation(e.target.value)}
                         value={destinationLocation}
-                        onChangeEvent={(e) =>
-                          setDestinationLocation(e.target.value)
-                        }
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={inputRef}
                       />
                     </div>
                     <div>
@@ -3531,12 +4589,68 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Cycle Type</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+
+                      <select
                         value={cycleType}
-                        onChangeEvent={(e) => setCycleType(e.target.value)}
-                      />
+                        onChange={(e) => setCycleType(e.target.value)}
+                        className="text-select"
+                      >
+                        <option value=""></option>
+                        <option value="USA 70 hours / 8 days (Interstate)">
+                          USA 70 hours / 8 days (Interstate)
+                        </option>
+                        <option value="Alaska 70 hours / 7 days (Interstate)">
+                          Alaska 70 hours / 7 days (Interstate)
+                        </option>
+                        <option value="Alaska 80 hours / 8 days (Interstate)">
+                          {" "}
+                          Alaska 80 hours / 8 days (Interstate)
+                        </option>
+                        <option value="Caifornia 80 hours / 8 days (Interstate)">
+                          {" "}
+                          Caifornia 80 hours / 8 days (Interstate)
+                        </option>
+                        <option value="Florida 70 hours / 7 days (Interstate)">
+                          {" "}
+                          Florida 70 hours / 7 days (Interstate)
+                        </option>
+                        <option value="Florida 80 hours / 8 days (Interstate)">
+                          {" "}
+                          Florida 80 hours / 8 days (Interstate)
+                        </option>
+
+                        <option value="Oregon 70 hours / 7 days (Interstate)">
+                          {" "}
+                          Oregon 70 hours / 7 days (Interstate)
+                        </option>
+                        <option value="Oregon 80 hours / 8 days (Interstate)">
+                          {" "}
+                          Oregon 80 hours / 8 days (Interstate)
+                        </option>
+
+                        <option value="Texas 70 hours / 7 days (Interstate)">
+                          {" "}
+                          Texas 70 hours / 7 days (Interstate)
+                        </option>
+
+                        <option value="USA 60 hours / 7 days (Interstate)">
+                          {" "}
+                          USA 60 hours / 7 days (Interstate)
+                        </option>
+                        <option value="USA 70 hours / 8 days (Interstate)">
+                          {" "}
+                          USA 70 hours / 8 days (Interstate)
+                        </option>
+
+                        <option value="Wisconsin 70 hours / 7 days (Interstate)">
+                          {" "}
+                          Wisconsin 70 hours / 7 days (Interstate)
+                        </option>
+                        <option value="Wisconsin 80 hours / 8 days (Interstate)">
+                          {" "}
+                          Wisconsin 80 hours / 8 days (Interstate)
+                        </option>
+                      </select>
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">DOT number</label>
@@ -3657,31 +4771,38 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Address</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+
+                      <input
+                        onChange={(e) => setOfficeAddress(e.target.value)}
                         value={officeAddress}
-                        onChangeEvent={(e) => setOfficeAddress(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={officeAddRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">City</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setOfficeCity(e.target.value)}
                         value={officeCity}
-                        onChangeEvent={(e) => setOfficeCity(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={cityRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Zip</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setOfficeZip(e.target.value)}
                         value={officeZip}
-                        onChangeEvent={(e) => setOfficeZip(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={postalRef}
                       />
                     </div>
                   </div>
@@ -3689,21 +4810,25 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                     <div>
                       <label className="text-[#8E8F8F]">State </label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setOfficeState(e.target.value)}
                         value={officeState}
-                        onChangeEvent={(e) => setOfficeState(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={stateRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Country </label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setOfficeCountry(e.target.value)}
                         value={officeCountry}
-                        onChangeEvent={(e) => setOfficeCountry(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={countryRef}
                       />
                     </div>
                     <div></div>
@@ -3723,33 +4848,37 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Address</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setTerminalAddress(e.target.value)}
                         value={terminalAddress}
-                        onChangeEvent={(e) =>
-                          setTerminalAddress(e.target.value)
-                        }
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={terminalAddressRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">City</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setTerminalCity(e.target.value)}
                         value={terminalCity}
-                        onChangeEvent={(e) => setTerminalCity(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={terminalCityRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Zip</label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setTerminalZip(e.target.value)}
                         value={terminalZip}
-                        onChangeEvent={(e) => setTerminalZip(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={terminalZipRef}
                       />
                     </div>
                   </div>
@@ -3757,23 +4886,25 @@ const EditElog = ({ show, handleClose, title, data, fetchHandler }) => {
                     <div>
                       <label className="text-[#8E8F8F]">State </label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setTerminalState(e.target.value)}
                         value={terminalState}
-                        onChangeEvent={(e) => setTerminalState(e.target.value)}
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={terminalStateRef}
                       />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Country </label>
                       <br />
-                      <InputComponent
-                        className="text-input"
-                        required
+                      <input
+                        onChange={(e) => setTerminalCountry(e.target.value)}
                         value={terminalCountry}
-                        onChangeEvent={(e) =>
-                          setTerminalCountry(e.target.value)
-                        }
+                        className="text-input"
+                        type="text"
+                        required
+                        ref={terminalCountryRef}
                       />
                     </div>
                     <div></div>
@@ -3845,36 +4976,95 @@ const EditElogEvent = ({
       dataLabels: {
         enabled: false,
       },
+      tooltip: {
+        enabled: false,
+      },
       title: {
         text: "",
         align: "left",
       },
-
+      markers: {
+        size: 0,
+      },
       xaxis: {
-        title: {
-          text: "",
-        },
-        labels: {
-          formatter: (val) => `${val}`, // Customize the time labels if needed
-        },
+        categories: [
+          "M",
+          "",
+          "1",
+          "",
+          "2",
+          "",
+          "3",
+          "",
+          "4",
+          "",
+          "5",
+          "",
+          "6",
+          "",
+          "7",
+          "",
+          "8",
+          "",
+          "9",
+          "",
+          "10",
+          "",
+          "11",
+          "",
+          "N",
+          "",
+          "1",
+          "",
+          "2",
+          "",
+          "3",
+          "",
+          "4",
+          "",
+          "5",
+          "",
+          "6",
+          "",
+          "7",
+          "",
+          "8",
+          "",
+          "9",
+          "",
+          "10",
+          "",
+          "11",
+          "",
+          "M",
+        ],
       },
       yaxis: {
-        title: {
-          text: "",
-        },
-        categories: ["S", "ON", "OFF", "SB"], // Fixed status values on the y-axis
+        min: 1,
+        max: 4,
         labels: {
-          formatter: function (val) {
-            return val; // Show the status labels as they are
+          formatter: function (value) {
+            const statusLabels = { 2: "D", 1: "On", 3: "SB", 4: "Off" };
+            // const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
+            return statusLabels[value] || "";
           },
         },
       },
-
-      markers: {
-        hover: {
-          sizeOffset: 4,
+      grid: {
+        show: true,
+        borderColor: "#e0e0e0", // Match gridlines to desired style
+        xaxis: {
+          lines: {
+            show: true, // Show vertical gridlines
+          },
+        },
+        yaxis: {
+          lines: {
+            show: false, // Show horizontal gridlines
+          },
         },
       },
+      colors: ["#3E7B27"],
     },
   });
   const [dutyStatus, setDutyStatus] = useState("");
@@ -3890,68 +5080,49 @@ const EditElogEvent = ({
         const date = new Date(item.fromTime);
         return isNaN(date.getTime()) ? null : date;
       });
-
       const statusArr = graph?.data?.docs?.map(
         (item) => statusMapping[item.dutyStatus]
       );
+      const chartData = new Array(50).fill(null);
+      let lastStatus = null;
+      let lastTimeIndex = -1;
+      let statusMap = {};
+      timeArray.forEach((time, index) => {
+        if (time) {
+          const hour = time.getHours();
+          const minutes = time.getMinutes();
+          let categoryIndex = hour * 2 + (minutes >= 30 ? 1 : 0);
+          if (minutes >= 15 && minutes < 30) {
+            categoryIndex = hour * 2 + 1;
+          }
+          if (!(categoryIndex in statusMap)) {
+            statusMap[categoryIndex] = statusArr[index];
+          }
+          if (lastTimeIndex !== -1 && categoryIndex > lastTimeIndex) {
+            for (let i = lastTimeIndex + 1; i < categoryIndex; i++) {
+              if (!statusMap[i]) {
+                statusMap[i] = lastStatus;
+              }
+            }
+          }
 
-      const chartData = statusArr.map((status, index) => ({
-        x: timeArray[index],
-        y: status,
-      }));
+          lastStatus = statusArr[index];
+          lastTimeIndex = categoryIndex;
+        }
+      });
 
-      const lastItem = graph?.data?.docs[graph.data.docs.length - 1];
-      const lastToTime = lastItem ? new Date(lastItem.toTime) : null;
-
-      if (lastToTime && !isNaN(lastToTime.getTime())) {
-        const lastStatus = statusMapping[lastItem.dutyStatus];
-        chartData.push({
-          x: lastToTime,
-          y: lastStatus,
-        });
-      }
+      Object.keys(statusMap).forEach((index) => {
+        chartData[index] = statusMap[index];
+      });
 
       setChartState((prevState) => ({
         ...prevState,
         series: [
           {
-            data: chartData, // Use prepared chart data
+            name: "Duty Status",
+            data: chartData,
           },
         ],
-        options: {
-          ...prevState.options,
-          title: {
-            text: date,
-          },
-          yaxis: {
-            min: 1,
-            max: 4,
-            title: {
-              text: "",
-            },
-            labels: {
-              formatter: function (value) {
-                const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
-                return statusLabels[value];
-              },
-            },
-          },
-          xaxis: {
-            title: {
-              text: "",
-            },
-            labels: {
-              formatter: function (value) {
-                const date = new Date(value);
-                return date.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                });
-              },
-            },
-          },
-        },
       }));
     }
   }, [graph, show]);
@@ -3992,7 +5163,6 @@ const EditElogEvent = ({
       setLocation(data?.location);
     }
   }, [show && data]);
-
   const convertDateFormat = (dateString) => {
     if (!dateString) {
       return;
@@ -4137,7 +5307,7 @@ const EditElogEvent = ({
               <ButtonComponent
                 label={"Update"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86e3ce] w-[50%] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                 }
                 type="submit"
                 isLoading={loading}
@@ -4173,7 +5343,7 @@ const ViewProfile = ({ show, handleClose, data }) => {
       </div>
       <div className="flex items-center p-2 justify-between w-full bg-[#ECF5FF] hover:text-[#34B7C1] cursor-pointer">
         <div className="flex gap-2">
-        <img
+          <img
             src={data?.profilePic}
             style={{
               width: "40px",
@@ -4185,7 +5355,7 @@ const ViewProfile = ({ show, handleClose, data }) => {
             alt=""
           />
           <div>
-          <p className="text-[#86E3CE] font-[700]"> {data?.owner} </p>
+            <p className="text-[#86E3CE] font-[700]"> {data?.owner} </p>
             <p className="text-[#1F384C] font-[700]">DOT {data?.dot} </p>
           </div>
         </div>
@@ -4220,7 +5390,29 @@ const ViewProfile = ({ show, handleClose, data }) => {
   );
 };
 
-const EditHomeTerminal = ({ show, handleClose }) => {
+const EditHomeTerminal = ({ show, handleClose, fetchProfile, data }) => {
+  const [timeZone, setTimeZone] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const payload = {
+    timeZone,
+  };
+
+  useEffect(() => {
+    if (show && profile) {
+      setTimeZone(data?.data?.timeZone);
+    }
+  }, [show, profile]);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    putApi(endPoints.companies.updateDetail(data?.data?._id), payload, {
+      setLoading,
+      successMsg: "Timezone updated successfully !",
+      additionalFunctions: [handleClose, fetchProfile],
+    });
+  };
+
   return (
     <Modal
       centered
@@ -4232,7 +5424,7 @@ const EditHomeTerminal = ({ show, handleClose }) => {
     >
       <div className="reset-password-modal">
         <hr />
-        <form>
+        <form onSubmit={submitHandler}>
           <div className="pl-5 pr-5">
             <div className="flex-inputs" style={{ flexWrap: "wrap" }}>
               <div style={{ width: "100%" }}>
@@ -4241,8 +5433,29 @@ const EditHomeTerminal = ({ show, handleClose }) => {
                   <span style={{ color: "red" }}>*</span>
                 </label>{" "}
                 <br />
-                <select className="text-select">
-                  <option>Central Time (Us & Canada)</option>
+                <select
+                  className="text-select"
+                  onChange={(e) => setTimeZone(e.target.value)}
+                  value={timeZone}
+                >
+                  <option value="">Select your preference</option>
+                  <option value={"Eastern Time (US & Canada)"}>
+                    Eastern Time (US & Canada)
+                  </option>
+                  <option value={"Central Time (US & Canada)"}>
+                    Central Time (US & Canada)
+                  </option>
+                  <option value={"Mountain Daylight Time (US & Canada)"}>
+                    Mountain Daylight Time (US & Canada)
+                  </option>
+                  <option value={"Mountain Standard Time (US & Canada)"}>
+                    Mountain Standard Time (US & Canada)
+                  </option>
+                  <option value={"Pacific Time (US & Canada)"}>
+                    Pacific Time (US & Canada)
+                  </option>
+                  <option value={"Arizona"}>Arizona</option>
+                  <option value={"Alaska"}>Alaska</option>
                 </select>
               </div>
             </div>
@@ -4254,13 +5467,15 @@ const EditHomeTerminal = ({ show, handleClose }) => {
                   "bg-[#fff] w-[50%] h-[45px] text-[#eb5757] flex justify-center items-center gap-2 border border-red-500"
                 }
                 type="button"
+                onClickEvent={handleClose}
               />
               <ButtonComponent
                 label={"Update"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] border-[#86E3CE] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
                 }
-                type="button"
+                isLoading={loading}
+                type="submit"
               />
             </div>
           </div>

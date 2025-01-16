@@ -1,12 +1,15 @@
 /** @format */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { AlertDateSelector } from "../../Components/Modals/Modals";
+import {
+  AlertDateSelector,
+  EditThreshold,
+} from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { Dropdown } from "antd";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
-import { Pagination } from "../../Components/HelpingComponent";
+import { Pagination } from "../../Components/HelpingComponents";
 
 const items = [
   {
@@ -17,11 +20,16 @@ const items = [
 
 const ExternalBattery = () => {
   const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
   const [page, setPage] = useState(1);
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.logbook.allCompanyLog({ page }), {
+    const queryParams = new URLSearchParams({
+      page,
+      limit: 10,
+    });
+    getApi(endPoints.logbook.allCompanyLog(queryParams?.toString()), {
       setResponse: setData,
     });
   }, [page]);
@@ -29,11 +37,10 @@ const ExternalBattery = () => {
   useEffect(() => {
     fetchHandler();
   }, [fetchHandler]);
-
   const thead = [
     <input type={"checkbox"} />,
     "Vehicle",
-    "Vehicle Type",
+    "Assest Type",
     "Device Name",
     "Battery Level",
     "Avg Battery Charge",
@@ -44,14 +51,13 @@ const ExternalBattery = () => {
     "Min Charge",
   ];
 
-  const tbody = data?.data?.docs?.map((i) => [
-    i?.truck?.vehicleNumber,
-    i?.truck?.vehicleType,
-  ]);
+  const tbody = data?.data?.docs?.map((i) => [i?.truck?.vehicleNumber]);
 
   return (
     <section className="dormancy-report-page p-5">
       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
+      <EditThreshold show={show} handleClose={() => setShow(false)} />
+
       <div className="report-btn-container">
         <div className="relative" onClick={() => setOpen(true)}>
           <input
@@ -81,9 +87,10 @@ const ExternalBattery = () => {
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={tbody} />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
         currentPage={page}
         setCurrentPage={setPage}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
       />
     </section>
   );

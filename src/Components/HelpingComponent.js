@@ -1,6 +1,7 @@
 /** @format */
 
 import { ClipLoader } from "react-spinners";
+import { GrFormPrevious } from "react-icons/gr";
 
 const Loader = ({ isLoading }) => {
   return (
@@ -49,19 +50,17 @@ const InputComponent = ({
   );
 };
 
-const Pagination = ({ className, totalPages, currentPage, setCurrentPage }) => {
+const Pagination = ({
+  className,
+  currentPage,
+  setCurrentPage,
+  hasPrevPage,
+  hasNextPage,
+}) => {
   return (
     <div className={`pagination ${className}`}>
       <ul>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <li
-            key={index}
-            className={index + 1 === currentPage ? "active" : ""}
-            onClick={() => setCurrentPage(index + 1)}
-          >
-            {index + 1}
-          </li>
-        ))}
+        <li>{currentPage}</li>
       </ul>
     </div>
   );
@@ -112,5 +111,5 @@ export {
   Loader,
   SectionHeading,
   Tabs,
-  CustomProgressBar
+  CustomProgressBar,
 };

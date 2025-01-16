@@ -1,4 +1,6 @@
 /** @format */
+import { Navigation } from "swiper/modules";
+
 
 export const innerMenuOptions = [
   {
@@ -88,4 +90,15 @@ export const statusMapping = {
   D: 2,
   Off: 3,
   SB: 4,
+};
+
+export const locationSwiperConfig = {
+  spaceBetween: 20,
+  loop: false,
+  slidesPerView: "auto",
+  speed: 500,
+  resistance: false,
+  resistanceRatio: 0,
+  modules: [Navigation],
+  navigation : true
 };

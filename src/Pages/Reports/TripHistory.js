@@ -4,7 +4,7 @@ import { Dropdown } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
-import { Pagination, Tabs } from "../../Components/HelpingComponent";
+import { Pagination, Tabs } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
@@ -62,8 +62,13 @@ const TripHistory = () => {
   const [page, setPage] = useState(1);
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.logbook.allCompanyLog({ page }), {
+    const queryParams = new URLSearchParams({
+      page,
+      limit: 10,
+    });
+    getApi(endPoints.logbook.allCompanyLog(queryParams?.toString()), {
       setResponse: setData,
+      showErr: false,
     });
   }, [page]);
 
@@ -211,7 +216,6 @@ const TripHistory = () => {
                 text={`${avgReport?.data?.totalTrip || 0}`}
               />
             </div>
-
             <div className="flex-box">
               <div className="items">
                 <p className="faded">Total Trips</p>
@@ -247,9 +251,10 @@ const TripHistory = () => {
           />
           <Pagination
             className={"mt-5"}
-            totalPages={data?.data?.totalPages}
             currentPage={page}
             setCurrentPage={setPage}
+            hasNextPage={data?.data?.hasNextPage}
+            hasPrevPage={data?.data?.hasPrevPage}
           />
         </div>
       ) : (

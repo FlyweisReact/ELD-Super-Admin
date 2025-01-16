@@ -1,21 +1,47 @@
 /** @format */
 import React, { useEffect, useState, useCallback } from "react";
-import { GoDotFill } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { deleteApi, getApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import {
-  Loader,
   Pagination,
+  Loader,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents";
 import { CreateTruck } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { CiCircleCheck } from "react-icons/ci";
+import { returnFullName, formatDateInEST } from "../../utils/utils";
+
+const CheckDeviceConnection = (status) => {
+  if (status === "Connected") {
+    return (
+      <div className="logbook-device-connect connected">
+        <span className="color-dot" />
+        Connected
+      </div>
+    );
+  } else if (status === "Disconnected") {
+    return (
+      <div className="logbook-device-connect disconnected">
+        <span className="color-dot" />
+        Disconnected
+      </div>
+    );
+  } else {
+    return (
+      <div className="logbook-device-connect">
+        <span className="color-dot" />
+        {status}
+      </div>
+    );
+  }
+};
 
 const Vehicles = () => {
+  const companyId = localStorage.getItem("companyId");
   const navigate = useNavigate("");
   const [selectedTab, setselectedTab] = useState("Active");
   const [data, setData] = useState({});
@@ -26,7 +52,8 @@ const Vehicles = () => {
   const [allPushed, setAllPushed] = useState(false);
   const [deactiveData, setDeactiveData] = useState({});
   const allIds = data?.data?.docs?.map((i) => i?._id);
-  const companyId = localStorage.getItem("companyId");
+  const deactiveIds = deactiveData?.data?.docs?.map((i) => i?._id);
+  const [status, setStatus] = useState(null);
 
   const pushInArr = (id) => {
     const alreadyPresent = ids.some((i) => i === id);
@@ -52,7 +79,11 @@ const Vehicles = () => {
     if (allPushed) {
       setIds([]);
     } else {
-      setIds(allIds);
+      if (selectedTab === "Deativated") {
+        setIds(deactiveIds);
+      } else {
+        setIds(allIds);
+      }
     }
   };
 
@@ -72,10 +103,10 @@ const Vehicles = () => {
     "Relay Switch",
     "Fault Codes",
     "Driver",
-    "Current Location (CDT)",
+    "Current Location (EST)",
     "Mode",
     "Documents",
-    "Add Date (CDT)",
+    "Add Date (EST)",
     "Actions",
   ];
 
@@ -91,36 +122,24 @@ const Vehicles = () => {
       onClick={() => navigate(`/Vehicledetail/${i._id}`)}
     >
       <p className="bold">{i.vehicleNumber}</p>
-      <p>----------------</p>
+      <p> {i?.serialNumber} </p>
     </div>,
     i?.vehicleType,
-    i?.status && (
-      <div
-        className="flex items-center gap-1"
-        style={{ textTransform: "uppercase" }}
-      >
-        <GoDotFill style={{ color: "#1dbc60", fontSize: "20px" }} />
-        Active
-      </div>
-    ),
+    CheckDeviceConnection(i?.isDeviceConnected),
     i?.relaySwitch?.length > 0 ? "Yes" : "----",
     i?.faultCode && <div className="danger-badge">{i?.faultCode} </div>,
     <div className="client-list">
-      {i?.drivers?.map((item) => (
-        <span key={i?._id}> {item?.fullName} </span>
-      ))}
-    </div>,
-    <div className="client-list">
-      {i?.location?.coordinates?.map((points, index) => (
-        <span key={index}>
-          {" "}
-          {index + 1 === i?.location?.coordinates?.length
-            ? points
-            : `${points},`}{" "}
+      {i?.drivers?.map((item, index) => (
+        <span key={i?._id} style={{ textTransform: "capitalize" }}>
+          {returnFullName(item)} {i?.drivers?.length !== index + 1 && ", "}
         </span>
       ))}
     </div>,
-    i?.vehicleModel,
+    <div className="client-list">
+      <span> {i?.locationInWord} </span>
+      <span> {i?.locationUpdate && formatDateInEST(i?.locationUpdate)} </span>
+    </div>,
+    i?.mode,
     <div>
       {i?.registrationNumber && (
         <div className="flex items-center  gap-1">
@@ -141,7 +160,7 @@ const Vehicles = () => {
         </div>
       )}
     </div>,
-    i?.createdAt?.slice(0, 10),
+    i?.createdAt && formatDateInEST(i?.createdAt),
     <i
       className="fa-solid fa-trash-can"
       onClick={() => removeHandler(i?._id)}
@@ -149,36 +168,40 @@ const Vehicles = () => {
   ]);
 
   const DeativatedThead = [
+    <input type="checkbox" onChange={() => pushAll()} />,
     <div className="text-left">Vehicle No. | Serial No.</div>,
     "Vehicle Type",
     <div className="text-left">Status</div>,
     "Mode",
-    "Add Date (CDT)",
-    "Delete Date (CDT)",
+    "Add Date (EST)",
+    "Delete Date (EST)",
     "Actions",
   ];
 
+  useEffect(() => {
+    setStatus(selectedTab === "Deativated");
+    setIds([]);
+  }, [selectedTab]);
+
   const DeactivatedTBody = deactiveData?.data?.docs?.map((i) => [
+    <input
+      type="checkbox"
+      className="checkbox"
+      onChange={() => pushInArr(i._id)}
+      checked={checkIfAlreadyPresent(i._id)}
+    />,
     <div
       className="text-left"
       onClick={() => navigate(`/Vehicledetail/${i._id}`)}
     >
       <p className="bold">{i.vehicleNumber}</p>
-      <p>----------------</p>
+      <p>{i?.serialNumber} </p>
     </div>,
     i?.vehicleType,
-    i?.status && (
-      <div
-        className="flex items-center  gap-1"
-        style={{ textTransform: "uppercase" }}
-      >
-        <GoDotFill style={{ color: "#1dbc60", fontSize: "20px" }} />
-        In-Active
-      </div>
-    ),
-    i?.vehicleModel,
-    i?.createdAt?.slice(0, 10),
-    i?.updatedAt?.slice(0, 10),
+    CheckDeviceConnection(i?.isDeviceConnected),
+    i?.mode,
+    i?.createdAt && formatDateInEST(i?.createdAt),
+    i?.deletedDate && formatDateInEST(i?.deletedDate),
     <button className="activate-btn" onClick={() => activeStatus(i?._id)}>
       Activate
     </button>,
@@ -187,11 +210,11 @@ const Vehicles = () => {
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${data?.data?.totalDocs})`,
+      label: `Active (${data?.data?.totalDocs || 0})`,
     },
     {
       value: "Deativated",
-      label: `Deativated (${deactiveData?.data?.totalDocs})`,
+      label: `Deativated (${deactiveData?.data?.totalDocs || 0})`,
     },
   ];
 
@@ -199,7 +222,7 @@ const Vehicles = () => {
     return (
       <>
         <div className="driver-actions-btn flex sm-padding gap-1">
-          {ids.length > 0 && (
+          {status === false && ids?.length > 0 && (
             <button
               className="bg-[#fff] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
               style={{
@@ -212,12 +235,19 @@ const Vehicles = () => {
               <i className="fa-solid fa-trash-can"></i>Deactivate
             </button>
           )}
-
+          {status === true && ids?.length > 0 && (
+            <button
+              className="bg-[#86E3CE] w-[173px] flex justify-center items-center gap-2 rounded-lg text-black font-bold h-[45px]"
+              onClick={() => activateVehicles()}
+            >
+              <i className="fa-solid fa-check"></i>Activate
+            </button>
+          )}
           <button
-            className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+            className="bg-[#86E3CE] w-[173px] flex justify-center items-center gap-2  rounded-lg text-black font-bold h-[45px]"
             onClick={() => setOpen(true)}
           >
-            <IoMdAdd style={{ color: "white" }} /> Add Truck
+            <IoMdAdd color="#000" /> Add Truck
           </button>
         </div>
       </>
@@ -227,6 +257,7 @@ const Vehicles = () => {
   const fetchHandler = useCallback(() => {
     getApi(endPoints.vehicles.getActiveVehicle({ page: currentPage }), {
       setResponse: setData,
+      showErr: false,
     });
   }, [currentPage]);
 
@@ -237,6 +268,7 @@ const Vehicles = () => {
   const fetchDeactiveData = useCallback(() => {
     getApi(endPoints.vehicles.deactiveVehicles({ page: currentPage }), {
       setResponse: setDeactiveData,
+      showErr: false,
     });
   }, [currentPage]);
 
@@ -251,6 +283,17 @@ const Vehicles = () => {
     };
     putApi(endPoints.vehicles.updateStatus, payload, {
       successMsg: "Updated",
+      additionalFunctions: [fetchHandler, fetchDeactiveData],
+    });
+  };
+
+  const activateVehicles = () => {
+    const payload = {
+      ids,
+      company: companyId,
+    };
+    putApi(endPoints.vehicles.updateStatus, payload, {
+      successMsg: "Activated",
       additionalFunctions: [fetchHandler, fetchDeactiveData],
     });
   };
@@ -306,7 +349,8 @@ const Vehicles = () => {
               />
               <Pagination
                 className={"mt-5"}
-                totalPages={data?.data?.totalPages}
+                hasNextPage={data?.data?.hasNextPage}
+                hasPrevPage={data?.data?.hasPrevPage}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
               />
@@ -323,7 +367,8 @@ const Vehicles = () => {
             />
             <Pagination
               className={"mt-5"}
-              totalPages={deactiveData?.data?.totalPages}
+              hasNextPage={deactiveData?.data?.hasNextPage}
+              hasPrevPage={deactiveData?.data?.hasPrevPage}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />

@@ -154,6 +154,23 @@ const getCurrentTimeInEST12Hour = () => {
   return estFormatter.format(now);
 };
 
+const formatDateInEST = (isoDateString) => {
+  const inputDate = new Date(isoDateString);
+  const options = {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+  const formattedEST = new Intl.DateTimeFormat("en-US", options).format(
+    inputDate
+  );
+  return formattedEST;
+};
+
 export {
   tokenSaver,
   dateFormatter,
@@ -166,4 +183,5 @@ export {
   convertSecondsToHHMM,
   downloadReport,
   getCurrentTimeInEST12Hour,
+  formatDateInEST,
 };

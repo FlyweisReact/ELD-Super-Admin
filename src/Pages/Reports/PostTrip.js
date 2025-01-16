@@ -72,7 +72,6 @@ const PostTrip = () => {
     "Sep 5",
     "Sep 6",
   ];
-
   const thead = [
     <input type={"checkbox"} />,
     "Driver Name",

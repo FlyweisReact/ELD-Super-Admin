@@ -1,7 +1,10 @@
 /** @format */
 
 import React, { useState } from "react";
-import { AlertDateSelector, EditThreshold } from "../../Components/Modals/Modals";
+import {
+  AlertDateSelector,
+  EditThreshold,
+} from "../../Components/Modals/Modals";
 import ReactApexChart from "react-apexcharts";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 

@@ -9,7 +9,7 @@ import add from "../../Assets/Vechicledetail/add.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { getApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
-import { dateFormatter } from "../../utils/utils";
+import { dateFormatter, formatDateInEST } from "../../utils/utils";
 import {
   EditCargoInsurance,
   EditTruckLiability,
@@ -17,7 +17,7 @@ import {
   EditVehicleRegestration,
 } from "../../Components/Modals/Modals.js";
 import TableLayout from "../../Components/TableLayout/TableLayout";
-import { Pagination, Tabs } from "../../Components/HelpingComponent";
+import { Pagination, Tabs } from "../../Components/HelpingComponents.js";
 
 const Vehicledetail = () => {
   const params = useParams();
@@ -47,13 +47,13 @@ const Vehicledetail = () => {
       endPoints.vehicles.getActiveDtc({
         truck: params?.id,
         page: currentPage,
-        companyId: companyId,
       }),
       {
         setResponse: setActiveDTC,
+        showErr: false,
       }
     );
-  }, [params, currentPage, companyId]);
+  }, [params, currentPage]);
 
   const uploadImage = (file) => {
     const fd = new FormData();
@@ -83,7 +83,7 @@ const Vehicledetail = () => {
     <div>
       SPN: {i?.spn} , FMI: {i?.fmi}, OC: {i?.oc}
     </div>,
-    dateFormatter(i?.createdAt),
+    i?.createdAt && formatDateInEST(i?.createdAt),
     i?.logBookMode,
   ]);
 
@@ -154,7 +154,7 @@ const Vehicledetail = () => {
 
                     <div>
                       <MdOutlineEdit
-                        style={{ color: "#34B7C1" }}
+                        color="#86e3ce"
                         className="cursor-pointer"
                         onClick={() => setOpen(true)}
                       />
@@ -225,7 +225,7 @@ const Vehicledetail = () => {
 
                     <div>
                       <MdOutlineEdit
-                        style={{ color: "#34B7C1" }}
+                        color="#86e3ce"
                         className="cursor-pointer"
                         onClick={() => setVehicleregistration(true)}
                       />
@@ -247,7 +247,8 @@ const Vehicledetail = () => {
                       </div>
                       <div className="text-[#666666]">
                         {" "}
-                        {dateFormatter(data?.data?.expireDate)}{" "}
+                        {data?.data?.expireDate &&
+                          dateFormatter(data?.data?.expireDate)}{" "}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -256,8 +257,15 @@ const Vehicledetail = () => {
                       </div>
                       <div className="flex gap-2 items-center text-[#666666]">
                         {" "}
-                        {data?.data?.emailAlertDaysPrior} days{" "}
-                        <img src={tickmark} alt="" />
+                        {data?.data?.emailAlertDaysPrior > 0 && (
+                          <>
+                            {data?.data?.emailAlertDaysPrior}{" "}
+                            {data?.data?.emailAlertDaysPrior === 1
+                              ? "day"
+                              : "days"}{" "}
+                            <img src={tickmark} alt="" />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -271,7 +279,7 @@ const Vehicledetail = () => {
 
                     <div>
                       <MdOutlineEdit
-                        style={{ color: "#34B7C1" }}
+                        color="#86e3ce"
                         className="cursor-pointer"
                         onClick={() => setEditvehicleliability(true)}
                       />
@@ -300,9 +308,10 @@ const Vehicledetail = () => {
                       </div>
                       <div className="text-[#666666]">
                         {" "}
-                        {dateFormatter(
-                          data?.data?.liabilityInsuranceExpireDate
-                        )}{" "}
+                        {data?.data?.liabilityInsuranceExpireDate &&
+                          dateFormatter(
+                            data?.data?.liabilityInsuranceExpireDate
+                          )}{" "}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -311,9 +320,17 @@ const Vehicledetail = () => {
                       </div>
                       <div className="flex gap-2 items-center text-[#666666]">
                         {" "}
-                        {
-                          data?.data?.liabilityInsuranceEmailAlertDaysPrior
-                        } days <img src={tickmark} alt="" />
+                        {data?.data?.liabilityInsuranceEmailAlertDaysPrior >
+                          0 && (
+                          <>
+                            {data?.data?.liabilityInsuranceEmailAlertDaysPrior}{" "}
+                            {data?.data
+                              ?.liabilityInsuranceEmailAlertDaysPrior === 1
+                              ? "day"
+                              : "days"}{" "}
+                            <img src={tickmark} alt="" />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -327,7 +344,7 @@ const Vehicledetail = () => {
 
                     <div>
                       <MdOutlineEdit
-                        style={{ color: "#34B7C1" }}
+                        color="#86e3ce"
                         className="cursor-pointer"
                         onClick={() => setCargoinsurance(true)}
                       />
@@ -356,9 +373,10 @@ const Vehicledetail = () => {
                       </div>
                       <div className="text-[#666666]">
                         {" "}
-                        {dateFormatter(
-                          data?.data?.cargoInsuranceExpireDate
-                        )}{" "}
+                        {data?.data?.cargoInsuranceExpireDate &&
+                          dateFormatter(
+                            data?.data?.cargoInsuranceExpireDate
+                          )}{" "}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -366,67 +384,61 @@ const Vehicledetail = () => {
                         Receive Alert:
                       </div>
                       <div className="flex gap-2 items-center text-[#666666]">
-                        {data?.data?.cargoInsuranceEmailAlertDaysPrior} days
-                        <img src={tickmark} alt="" />
+                        {" "}
+                        {data?.data?.cargoInsuranceEmailAlertDaysPrior > 0 && (
+                          <>
+                            {data?.data?.cargoInsuranceEmailAlertDaysPrior}{" "}
+                            {data?.data?.cargoInsuranceEmailAlertDaysPrior === 1
+                              ? "day"
+                              : "days"}{" "}
+                            <img src={tickmark} alt="" />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#F0FAFB73]  w-[780px] h-[320px]  box-shadow rounded-xl pl-5 pr-5 pt-8 pb-8">
+                <div className="bg-[#F0FAFB73]  w-[780px] h-[auto]  box-shadow rounded-xl pl-5 pr-5 pt-8 pb-8">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2 text-[28px]">
                       <img src={vehiclegallary} alt="" />
                       Vehicle Gallery
                     </div>
-
-                    <div>
-                      <MdOutlineEdit style={{ color: "#34B7C1" }} />
-                    </div>
                   </div>
-                  <div className="mt-2 flex gap-2">
+
+                  <div className="vehicle-gallery">
+                    {data?.data?.image?.map((item, index) => (
+                      <div key={`img${index}`} className="item">
+                        <a href={item?.img} target="_blank" rel="noreferrer">
+                          <img src={item?.img} alt="" />
+                        </a>
+                      </div>
+                    ))}
                     <input
                       type="file"
                       id="file"
                       style={{ display: "none" }}
                       onChange={(e) => uploadImage(e.target.files[0])}
                     />
-                    <div
-                      className="bg-[#34B7C133] w-[180px] h-[220px] rounded-lg relative cursor-pointer"
-                      onClick={() => fileHandler()}
-                    >
-                      <img
-                        src={add}
-                        alt=""
-                        className="absolute bottom-0 right-0 p-2"
-                      />
-                    </div>
-                    <div
-                      className="bg-[#34B7C133] w-[180px] h-[220px] rounded-lg relative cursor-pointer"
-                      onClick={() => fileHandler()}
-                    >
-                      <img
-                        src={add}
-                        alt=""
-                        className="absolute bottom-0 right-0 p-2"
-                      />
-                    </div>
-                    <div
-                      className="bg-[#34B7C133] w-[180px] h-[220px] rounded-lg relative cursor-pointer"
-                      onClick={() => fileHandler()}
-                    >
-                      <img
-                        src={add}
-                        alt=""
-                        className="absolute bottom-0 right-0 p-2"
-                      />
-                    </div>
+                    {Array.from({
+                      length: 6 - (data?.data?.image?.length || 0),
+                    }).map((_, index) => (
+                      <div
+                        key={`add-box-${index}`}
+                        className="add-box item"
+                        onClick={() => fileHandler()}
+                      >
+                        <button className="add_btn">
+                          <img src={add} alt="" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
           </>
         )}
-
         {selectedTab === "Active DTC Codes" && (
           <>
             <div>
@@ -438,7 +450,8 @@ const Vehicledetail = () => {
 
               <Pagination
                 className={"mt-5"}
-                totalPages={activeDTC?.data?.totalPages}
+                hasNextPage={activeDTC?.data?.hasNextPage}
+                hasPrevPage={activeDTC?.data?.hasPrevPage}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
               />

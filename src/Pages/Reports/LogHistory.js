@@ -11,7 +11,7 @@ import { AreaCharts, PieChart } from "../../Components/ApexCharts/Charts";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { returnFullName } from "../../utils/utils";
-import { Pagination } from "../../Components/HelpingComponent";
+import { Pagination } from "../../Components/HelpingComponents";
 
 const LogHistory = () => {
   const [open, setOpen] = useState(false);
@@ -20,8 +20,14 @@ const LogHistory = () => {
   const [page, setPage] = useState(1);
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.logbook.allCompanyLog({ page }), {
+    const queryParams = new URLSearchParams({
+      page,
+      limit: 10,
+    });
+
+    getApi(endPoints.logbook.allCompanyLog(queryParams?.toString()), {
       setResponse: setData,
+      showErr: false,
     });
   }, [page]);
 
@@ -74,10 +80,12 @@ const LogHistory = () => {
     "Sep 5",
     "Sep 6",
   ];
+
   return (
     <section className="dormancy-report-page p-5">
       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
       <EditThreshold show={show} handleClose={() => setShow(false)} />
+
       <div className="full-width">
         <div>
           <div className="relative" onClick={() => setOpen(true)}>
@@ -131,9 +139,10 @@ const LogHistory = () => {
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={body} />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
         currentPage={page}
         setCurrentPage={setPage}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
       />
     </section>
   );

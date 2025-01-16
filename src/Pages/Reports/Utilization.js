@@ -8,7 +8,7 @@ import { AlertDateSelector, EditHour } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
-import { Pagination } from "../../Components/HelpingComponent";
+import { Pagination } from "../../Components/HelpingComponents";
 
 const items = [
   {
@@ -60,8 +60,13 @@ const Utilization = () => {
   const [page, setPage] = useState(1);
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.logbook.allCompanyLog({ page }), {
+    const queryParams = new URLSearchParams({
+      page,
+      limit: 10,
+    });
+    getApi(endPoints.logbook.allCompanyLog(queryParams?.toString()), {
       setResponse: setData,
+      showErr: false,
     });
   }, [page]);
 
@@ -182,11 +187,11 @@ const Utilization = () => {
       <TableLayout thead={thead} className="vehicle-table mt-5" tbody={body} />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
         currentPage={page}
         setCurrentPage={setPage}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
       />
-
     </section>
   );
 };

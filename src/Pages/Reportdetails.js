@@ -1,18 +1,17 @@
 /** @format */
 
 import React, { useCallback, useEffect, useState } from "react";
+import { PopUp } from "../Components/PopUp";
 import DateFilter from "../Components/DateFilter";
 import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import { getApi } from "../Repository/Api";
-import endPoints from "../Repository/apiConfig";
-import { dateFormatter, returnFullName } from "../utils/utils";
+import TableLayout from "../Components/TableLayout";
 import { AlertDateSelector } from "../Components/Modals/Modals";
-import { Dropdown } from "antd";
 import ReactApexChart from "react-apexcharts";
-import TableLayout from "../Components/TableLayout/TableLayout";
-import { PopUp } from "../Components/PopUp";
-import { Pagination } from "../Components/HelpingComponent";
+import { Dropdown } from "antd";
+import { getApi } from "../Repository/Api";
+import { dateFormatter, returnFullName } from "../utils/utils";
+import { Pagination } from "../Components/HelpingComponents";
+import endPoints from "../Repository/apiConfig";
 
 const items = [
   {
@@ -37,8 +36,13 @@ const Reportdetails = () => {
   const value = 29;
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.logbook.allCompanyLog({ page }), {
+    const queryParams = new URLSearchParams({
+      page,
+      limit: 10,
+    });
+    getApi(endPoints.logbook.allCompanyLog(queryParams?.toString()), {
       setResponse: setData,
+      showErr: false,
     });
   }, [page]);
 
@@ -67,7 +71,6 @@ const Reportdetails = () => {
     "---",
     "View",
   ]);
-
   // --- overspeeding chart
   const [series] = useState([100]);
   const [overspeedingOption] = useState({
@@ -146,7 +149,7 @@ const Reportdetails = () => {
             }}
             trigger={["click"]}
           >
-            <button className=" w-[163px] h-[45px] text-white border bg-[#34B7C1] flex justify-center items-center gap-5 rounded-lg">
+            <button className=" w-[163px] h-[45px] text-black font-bold border bg-[#86E3CE] border-[#86E3CE] flex justify-center items-center gap-5 rounded-lg">
               Report Action
             </button>
           </Dropdown>
@@ -186,11 +189,13 @@ const Reportdetails = () => {
         className="vehicle-table mt-5 mb-5"
         tbody={tbody}
       />
+
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
         currentPage={page}
         setCurrentPage={setPage}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasNextPage}
       />
 
       <PopUp

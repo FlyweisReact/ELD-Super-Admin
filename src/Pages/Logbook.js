@@ -101,13 +101,6 @@ const Logbook = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeDrivers, setActiveDrivers] = useState({});
   const [inactiveDriver, setInactiveDriver] = useState({});
-  const [deletedDriver, setDeletedDriver] = useState({});
-  const [activeVehicle, setActiveVehicles] = useState({});
-  const [deactiveVehicle, setDeactiveVehicles] = useState({});
-  const [activeUser, setActiveUser] = useState({});
-  const [deactiveUser, setDeactiveUser] = useState({});
-  const [activeTerminal, setActiveTerminal] = useState({});
-  const [deactiveTerminal, setDeactiveTerminal] = useState({});
   const [allDrivers, setAllDrivers] = useState({});
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(null);
@@ -120,6 +113,7 @@ const Logbook = () => {
     getApi(endPoints.drivers.getAllDrivers({ page: currentPage, limit: 5 }), {
       setResponse: setActiveDrivers,
       setLoading,
+      showErr: false,
     });
   }, [currentPage]);
 
@@ -129,6 +123,7 @@ const Logbook = () => {
       {
         setResponse: setInactiveDriver,
         setLoading,
+        showErr: false,
       }
     );
   }, [currentPage]);
@@ -137,6 +132,7 @@ const Logbook = () => {
     getApi(endPoints.drivers.getDriversList({ page: currentPage, limit: 5 }), {
       setResponse: setAllDrivers,
       setLoading,
+      showErr: false,
     });
   }, [currentPage]);
 
@@ -160,27 +156,6 @@ const Logbook = () => {
   }, [fetchAlllDrivers]);
 
   useEffect(() => {
-    getApi(endPoints.drivers.allDeletedDriver({}), {
-      setResponse: setDeletedDriver,
-    });
-    getApi(endPoints.vehicles.getActiveVehicle({}), {
-      setResponse: setActiveVehicles,
-    });
-    getApi(endPoints.vehicles.deactiveVehicles({}), {
-      setResponse: setDeactiveVehicles,
-    });
-    getApi(endPoints.users.getUser({}), {
-      setResponse: setActiveUser,
-    });
-    getApi(endPoints.users.getDeactivatedUser({}), {
-      setResponse: setDeactiveUser,
-    });
-    getApi(endPoints.terminals.activeTerminal({}), {
-      setResponse: setActiveTerminal,
-    });
-    getApi(endPoints.terminals.inactiveTerminals({}), {
-      setResponse: setDeactiveTerminal,
-    });
     fetchCurrentEstTime();
   }, []);
 

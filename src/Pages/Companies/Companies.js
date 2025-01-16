@@ -4,7 +4,7 @@ import { Dropdown } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { Pagination, SectionHeading } from "../../Components/HelpingComponent";
+import { Pagination, SectionHeading } from "../../Components/HelpingComponents";
 import { AddCompany, EditCompany } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { deleteApi, getApi } from "../../Repository/Api";
@@ -121,7 +121,8 @@ const Companies = () => {
       />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
         currentPage={page}
         setCurrentPage={setPage}
       />

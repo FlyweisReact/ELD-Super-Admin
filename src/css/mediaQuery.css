@@ -126,4 +126,9 @@
   .flex-end{
     justify-content: end;
   }
+  .add-steps .step {
+    width: 100% !important;
+  }
+
+
 }

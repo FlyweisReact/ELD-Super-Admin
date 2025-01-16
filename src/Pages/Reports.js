@@ -3,6 +3,7 @@
 import React from "react";
 import isymbol from "../Assets/Reports/isymbol.svg";
 import { useNavigate } from "react-router-dom";
+import { SlReload } from "react-icons/sl";
 
 const data = [
   {
@@ -106,10 +107,10 @@ const Reports = () => {
         <div className="text-[28px] font-semibold">Reports</div>
         <div>
           <button
-            className="bg-[#34B7C1] px-6 h-[45px] flex items-center gap-2 rounded-lg text-white"
+            className="bg-[#86E3CE] px-6 h-[45px] text-black font-bold flex items-center gap-2 rounded-lg"
             onClick={() => navigate("/reports/report-history")}
           >
-            <img src="../Vector (18).png" alt="" />
+            <SlReload size={20} />
             Report History
           </button>
         </div>

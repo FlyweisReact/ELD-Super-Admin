@@ -1,6 +1,8 @@
 /** @format */
 
 import { ClipLoader } from "react-spinners";
+import { GrFormPrevious } from "react-icons/gr";
+import { GrFormNext } from "react-icons/gr";
 
 const Loader = ({ isLoading }) => {
   return (
@@ -13,19 +15,27 @@ const Loader = ({ isLoading }) => {
   );
 };
 
-const Pagination = ({ className, totalPages, currentPage, setCurrentPage }) => {
+const Pagination = ({
+  className,
+  currentPage,
+  setCurrentPage,
+  hasPrevPage,
+  hasNextPage,
+}) => {
   return (
     <div className={`pagination ${className}`}>
       <ul>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <li
-            key={index}
-            className={index + 1 === currentPage ? "active" : ""}
-            onClick={() => setCurrentPage(index + 1)}
-          >
-            {index + 1}
+        {hasPrevPage && (
+          <li onClick={() => setCurrentPage(currentPage - 1)}>
+            <GrFormPrevious size={20} />
           </li>
-        ))}
+        )}
+        <li>{currentPage}</li>
+        {hasNextPage && (
+          <li onClick={() => setCurrentPage(currentPage + 1)}>
+            <GrFormNext size={20} />
+          </li>
+        )}
       </ul>
     </div>
   );

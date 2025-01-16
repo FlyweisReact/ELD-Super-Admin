@@ -5,7 +5,6 @@ import { BarChart, BarHorizontal } from "../../Components/ApexCharts/Charts";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 
-
 const Geofence = () => {
   const [open, setOpen] = useState(false);
 
@@ -76,13 +75,13 @@ const Geofence = () => {
       "2QPVB6M",
       "Other",
       "121 Cedar Bivd , City Villa , IL",
-      2 ,
+      2,
       2,
       "5h 26m",
-      "49m" ,
-      "23.43 mi" ,
-      "36" ,
-      "Sep 05 , 2-24"
+      "49m",
+      "23.43 mi",
+      "36",
+      "Sep 05 , 2-24",
     ],
   ];
 

@@ -1,7 +1,6 @@
 /** @format */
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./Layout/Layout";
-import Dashboard from "./Pages/Dashboard";
 import Logbook from "./Pages/Logbook";
 import Reports from "./Pages/Reports";
 import Dashcams from "./Pages/Dashcams";
