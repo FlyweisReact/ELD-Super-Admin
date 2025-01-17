@@ -13,75 +13,6 @@ const endPoints = {
     changePassword: (id) => `api/v1/auth/changePassword/${id}`,
     getProfile: "api/v1/corporate/getProfile",
   },
-  user: {
-    getUsers: ({
-      query = "",
-      dutyStatus = "",
-      fromDate = "",
-      toDate = "",
-      page = 1,
-      limit = 10,
-    }) =>
-      `api/v1/admin/AllUser?search=${query}&dutyStatus=${dutyStatus}&fromDate=${fromDate}&toDate=${toDate}&page=${page}&limit=${limit}`,
-    createUser: "api/v1/admin/createUser",
-    resetPassword: (userId) => `api/v1/admin/changePassword/${userId}`,
-    updateDetails: (userId) => `api/v1/admin/updateUser/${userId}`,
-    deactivateUser: (userId) => `api/v1/admin/updateUserDeactivate/${userId}`,
-  },
-  truck: {
-    getAllTrucks: "api/v1/admin/Truck/allTruck",
-    paginatedTrucks: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allTruck?page=${page}&limit=${limit}`,
-    editVehicleDetails: (id) => `api/v1/admin/Truck/updateTruckDetails/${id}`,
-    editRegistration: (id) =>
-      `api/v1/admin/Truck/updateTruckRegistration/${id}`,
-    editTruckLiability: (id) =>
-      `api/v1/admin/Truck/updateTruckLiabilityInsurance/${id}`,
-    editCargoInsurance: (id) =>
-      `api/v1/admin/Truck/updateTruckCargoInsurance/${id}`,
-    createTruck: "api/v1/admin/Truck/addTruck",
-    uploadImages: (id) => `api/v1/admin/Truck/updateTruckImage/${id}`,
-  },
-  terminal: {
-    getAll: ({ page = 1, limit = 15 }) =>
-      `api/v1/admin/AllTerminal?page=${page}&limit=${limit}`,
-    createNew: "api/v1/admin/createTerminal",
-    update: (id) => `api/v1/admin/updateTerminal/${id}`,
-    getDetail: (id) => `api/v1/admin/getTerminal/${id}`,
-    assignDriver: (id) => `api/v1/admin/updateDriversInTerminal/${id}`,
-    unAssignDriver: ({ id, arrayId }) =>
-      `api/v1/admin/Truck/deleteDriversFromTerminal/${id}?arrayId=${arrayId}`,
-    remove: (id) => `api/v1/admin/deleteTerminal/${id}`,
-  },
-  eldDevice: {
-    getAll: ({ driver = "", status = "", page = 1, limit = 10 }) =>
-      `api/v1/admin/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}`,
-  },
-  driver: {
-    getAll: ({
-      query = "",
-      dutyStatus = "",
-      fromDate = "",
-      toDate = "",
-      page = 1,
-      limit = 10,
-    }) =>
-      `api/v1/admin/allDriver?search=${query}&dutyStatus=${dutyStatus}&fromDate=${fromDate}&toDate=${toDate}&page=${page}&limit=${limit}`,
-    createNew: "api/v1/admin/createDriver",
-  },
-  company: {
-    getAll: ({ page = 1, limit = 10, search = "" }) =>
-      `api/v1/admin/Company/allCompany?page=${page}&limit=${limit}&search=${search}`,
-    create: "api/v1/admin/Company/addCompany",
-    delete: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
-    getById: (id) => `api/v1/admin/Company/getCompany/${id}`,
-    updateDetail: (id) => `api/v1/admin/Company/updateCompany/${id}`,
-  },
-  activeDTC: {
-    getAll: ({ truck = "", page = 1, limit = 10 }) =>
-      `api/v1/admin/Truck/allTruckActiveDtcCode?truck=${truck}&page=${page}&limit=${limit}`,
-  },
-  // ---
   vehicles: {
     updateStatus: `api/v1/admin/Truck/updateTruckStatus`,
     updateRegestration: (id) =>
@@ -101,7 +32,6 @@ const endPoints = {
     createVehicle: "api/v1/admin/Truck/addTruck",
     editVehicleDetails: (id) => `api/v1/admin/Truck/updateTruckDetails/${id}`,
     getVehicleDetail: (id) => `api/v1/admin/Truck/getTruck/${id}`,
-
     getAllVehicles: (query = "") =>
       `api/v1/admin/Truck/getAllTruck?company=${getCompanyId()}&${query}`,
   },
@@ -111,8 +41,6 @@ const endPoints = {
     updateDriverStatus: "api/v1/admin/Truck/updateDriverStatus",
     allInactiveDriver: ({ page = 1, limit = 10 }) =>
       `api/v1/admin/allInActiveDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
-    allDeletedDriver: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/allDeleteDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
     removeDriver: (id) => `api/v1/admin/deleteUser/${id}`,
     createDriver: "api/v1/admin/createDriver",
     unassignTruck: (id) => `api/v1/admin/removeTruckFromDriverProfile/${id}`,
@@ -121,6 +49,10 @@ const endPoints = {
     getDriverDetail: (id) => `api/v1/admin/getUser/${id}`,
     getDriversList: ({ page = 1, limit = 10 }) =>
       `api/v1/admin/getAllDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+    allDeletedDriver: ({ page = 1, limit = 10 }) =>
+      `api/v1/admin/allDeleteDriver?page=${page}&limit=${limit}&company=${getCompanyId()}`,
+    allDriverQuery: (query = "") =>
+      `api/v1/admin/allDriver?${query?.toString()}`,
   },
   devices: {
     getDevices: ({ driver = "", status = "", page = 1, limit = 10 }) =>
@@ -159,11 +91,12 @@ const endPoints = {
       `api/v1/admin/Truck/deleteDriversFromTerminal/${id}?arrayId=${arrayId}`,
   },
   companies: {
-    getAll: ({ page = 1, limit = 10 }) =>
-      `api/v1/admin/Company/allCompany?limit=${limit}&page=${page}`,
+    getAll: ({ page = 1, limit = 10, search = "" }) =>
+      `api/v1/admin/Company/allCompany?limit=${limit}&page=${page}&search=${search}`,
     getDetail: `api/v1/admin/Company/getCompany/${getCompanyId()}`,
     remove: (id) => `api/v1/admin/Company/deleteCompany/${id}`,
     updateDetail: (id) => `api/v1/admin/Company/updateCompany/${id}`,
+    create: "api/v1/admin/Company/addCompany",
   },
   alert: {
     getAll: ({ page = 1, limit = 10 }) =>
@@ -191,15 +124,18 @@ const endPoints = {
     getRecap: (id) =>
       `api/v1/user/getAllDriverLogFromCurrentMonthByDriverId/${id}`,
     editLog: (id) => `api/v1/user/updateElogForm/${id}`,
-
     tripHistory: `api/v1/admin/Truck/getAllTruck?company=${getCompanyId()}`,
     tripAvg: `api/v1/corporate/Truck/getAllTruckDashboard?company=${getCompanyId()}`,
     allCompanyLog: (query = "") =>
       `api/v1/admin/AllElogForm?company=${getCompanyId()}&${query}`,
   },
-
   getTrackingLinks: (query = "") =>
     `api/v1/admin/getDriverLogDocs?company=${getCompanyId()}&${query}`,
+  getAllSuperAdmin: "api/v1/admin/allSuperAdmin",
+  inspectionMode: {
+    create: "api/v1/admin/addInspectionMode",
+    getAll: `api/v1/admin/allInspectionMode?company=${getCompanyId()}`,
+  },
 };
 
 export default endPoints;

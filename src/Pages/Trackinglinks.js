@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import TableLayout from "../Components/TableLayout/TableLayout";
-import { SectionHeading } from "../Components/HelpingComponent";
+import { SectionHeading } from "../Components/HelpingComponents";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
 
@@ -22,7 +22,6 @@ const formatDateInEST = (isoDateString) => {
 
 const Trackinglinks = () => {
   const [response, setResponse] = useState(null);
-  const [page, setPage] = useState(1);
 
   const fetchHandler = () => {
     getApi(endPoints.getTrackingLinks(), {

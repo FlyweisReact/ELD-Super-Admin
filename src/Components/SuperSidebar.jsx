@@ -43,7 +43,7 @@ const SuperSidebar = () => {
           </div>
           <Link to="/home">
             <Sidebar.Item
-              className="bg-white text-[#80848F] text-[16px]  p-2 mb-2  hover:text-[#34B7C1]"
+              className="bg-white text-[#80848F] text-[16px] font-semibold  p-2 mb-2  hover:text-[#34B7C1]"
               icon={Layer}
             >
               Home
@@ -51,7 +51,7 @@ const SuperSidebar = () => {
           </Link>
           <Link to="/companies">
             <Sidebar.Item
-              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  font-semibold  hover:text-[#34B7C1]"
               icon={CompanySvg}
             >
               Companies
@@ -61,7 +61,7 @@ const SuperSidebar = () => {
           {userDetail?.data?.userType !== "Admin" && (
             <Link to="/sub-admin">
               <Sidebar.Item
-                className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+                className="bg-white text-[#80848F] text-[16px] p-2 mb-2 font-semibold  hover:text-[#34B7C1]"
                 icon={AdminSvg}
               >
                 Sub admin
@@ -71,7 +71,7 @@ const SuperSidebar = () => {
 
           <Link to="/subscription">
             <Sidebar.Item
-              className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1]"
+              className="bg-white text-[#80848F] text-[16px] p-2 mb-2 font-semibold  hover:text-[#34B7C1]"
               icon={Devices}
             >
               Subscription
@@ -79,7 +79,7 @@ const SuperSidebar = () => {
           </Link>
 
           <Sidebar.Item
-            className="bg-white text-[#80848F] text-[16px] p-2 mb-2  hover:text-[#34B7C1] cursor-pointer"
+            className="bg-white text-[#80848F] text-[16px] p-2 mb-2  font-semibold  hover:text-[#34B7C1] cursor-pointer"
             icon={logOut}
             onClick={() => LogOutHandler(navigate)}
           >

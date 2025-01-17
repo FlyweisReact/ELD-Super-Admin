@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { IoArrowForward } from "react-icons/io5";
 import { postApi, showMsg } from "../../Repository/Api";
-import { InputComponent } from "../HelpingComponent";
+import { InputComponent } from "../HelpingComponents";
 import endPoints from "../../Repository/apiConfig";
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";

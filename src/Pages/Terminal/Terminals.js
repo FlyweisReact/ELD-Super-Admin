@@ -6,18 +6,19 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { deleteApi, getApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
-import { dateFormatter } from "../../utils/utils";
+import {  formatDateInEST } from "../../utils/utils";
 import {
   Loader,
   Pagination,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents";
 import { Dropdown } from "antd";
 import { CreateTerminal } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 
 const Terminals = () => {
+  const companyId = localStorage.getItem("companyId");
   const [Addterminal, setAddterminal] = useState(false);
   const [selectedTab, setselectedTab] = useState("Active");
   const [data, setData] = useState({ data: { docs: [] } });
@@ -30,7 +31,6 @@ const Terminals = () => {
   const [allPushed, setAllPushed] = useState(false);
   const [deactiveTerminals, setDeactiveTerminals] = useState({});
   const allIds = data?.data?.docs?.map((i) => i?._id);
-  const companyId = localStorage.getItem("companyId");
 
   const pushInArr = (id) => {
     const alreadyPresent = ids.some((i) => i === id);
@@ -123,11 +123,13 @@ const Terminals = () => {
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active Terminals (${data?.data?.totalDocs})`,
+      label: `Active Terminals (${data?.data?.totalDocs || 0})`,
     },
     {
       value: "Deactivated",
-      label: `Deactivated Terminals (${deactiveTerminals?.data?.totalDocs})`,
+      label: `Deactivated Terminals (${
+        deactiveTerminals?.data?.totalDocs || 0
+      })`,
     },
   ];
 
@@ -149,13 +151,13 @@ const Terminals = () => {
         )}
 
         <button
-          className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+          className="bg-[#86E3CE] w-[173px] flex justify-center items-center font-bold border-[#86E3CE] gap-2  rounded-lg text-black h-[45px]"
           onClick={() => {
             setEdit(false);
             setAddterminal(true);
           }}
         >
-          <IoMdAdd style={{ color: "white" }} /> Add Terminals
+          <IoMdAdd color="#000" /> Add Terminals
         </button>
       </div>
     );
@@ -167,7 +169,7 @@ const Terminals = () => {
     "Drivers",
     "Assets",
     "Timezone",
-    "Created On (CDT)",
+    "Created On (EST)",
     "Actions",
   ];
 
@@ -182,7 +184,7 @@ const Terminals = () => {
     i?.drivers?.length,
     i?.assets?.length,
     i?.timeZone,
-    dateFormatter(i?.createdAt),
+    i?.createdAt && formatDateInEST(i?.createdAt),
     <Dropdown
       menu={{
         items: [
@@ -236,7 +238,7 @@ const Terminals = () => {
     i?.drivers?.length,
     i?.assets?.length,
     i?.timeZone,
-    dateFormatter(i?.createdAt),
+    i?.createdAt && formatDateInEST(i?.createdAt),
     <button className="activate-btn" onClick={() => activateTerminal(i?._id)}>
       Activate
     </button>,
@@ -286,7 +288,8 @@ const Terminals = () => {
 
         <Pagination
           className={"mt-5"}
-          totalPages={data?.data?.totalPages}
+          hasNextPage={data?.data?.hasNextPage}
+          hasPrevPage={data?.data?.hasPrevPage}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />

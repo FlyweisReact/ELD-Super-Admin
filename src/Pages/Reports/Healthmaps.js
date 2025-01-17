@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useState } from "react";
-import { Tabs } from "../../Components/HelpingComponent";
+import { Tabs } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 
 const HealthMaps = () => {
@@ -41,7 +41,6 @@ const HealthMaps = () => {
   return (
     <section className="dormancy-report-page p-5 pt-0 pl-0 ">
       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
-
       <Tabs
         option={tabsOption}
         setTab={setSelectedTabs}

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { IoFilterOutline } from "react-icons/io5";
-import { Pagination, SectionHeading } from "../../Components/HelpingComponent";
+import { Pagination, SectionHeading } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
@@ -37,6 +37,7 @@ const Alerts = () => {
     </div>,
     "Location",
   ];
+
   const alertBody = data?.data?.docs?.map((i) => [
     <div>
       <div className="text-[#34B7C1] px-8 py-1 w-fit rounded-3xl bg-[#D3F8EA] m-auto">
@@ -54,6 +55,7 @@ const Alerts = () => {
     <div className="p-5">
       <AlertDateSelector show={open} handleClose={() => setOpen(false)} />
       <SectionHeading title={"Alerts"} />
+
       <div className="flex justify-between items-center mt-5 flex-column">
         <div>
           <div className="relative" onClick={() => setOpen(true)}>
@@ -72,7 +74,7 @@ const Alerts = () => {
         </div>
 
         <div className="driver-actions-btn flex sm-padding">
-          <button className=" w-[163px] h-[45px] text-white border bg-[#34B7C1] flex justify-center items-center gap-5 rounded-lg">
+          <button className=" w-[163px] h-[45px] text-black font-bold  border bg-[#86E3CE] flex justify-center items-center gap-5 rounded-lg">
             Download
           </button>
         </div>
@@ -85,7 +87,8 @@ const Alerts = () => {
       />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />

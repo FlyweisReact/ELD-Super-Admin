@@ -3,6 +3,7 @@
 import { ClipLoader } from "react-spinners";
 import { GrFormPrevious } from "react-icons/gr";
 import { GrFormNext } from "react-icons/gr";
+import Select from "react-select";
 
 const Loader = ({ isLoading }) => {
   return (
@@ -115,6 +116,30 @@ const CustomProgressBar = ({ label, percentage = 0, color }) => {
   );
 };
 
+const ReactSelect = ({
+  options,
+  setValue,
+  value,
+  inputValue,
+  placeholder,
+  className = "",
+}) => {
+  return (
+    <Select
+      value={value}
+      options={options}
+      placeholder={placeholder}
+      onChange={(e) => setValue(e)}
+      onInputChange={(input) => {
+        if (inputValue) {
+          inputValue(input);
+        }
+      }}
+      className={className}
+    />
+  );
+};
+
 export {
   Loader,
   Pagination,
@@ -123,4 +148,5 @@ export {
   Tabs,
   SectionHeading,
   CustomProgressBar,
+  ReactSelect,
 };

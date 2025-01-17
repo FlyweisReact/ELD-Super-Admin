@@ -107,7 +107,7 @@ const Companies = () => {
       <SectionHeading title={"Companies"} />
       <div className="flex gap-2 driver-actions-btn mt-3 justify-end">
         <button
-          className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+          className="bg-[#86E3CE] w-[173px] flex justify-center items-center gap-2  rounded-lg text-black font-semibold h-[45px]"
           onClick={() => setOpen(true)}
         >
           Create New

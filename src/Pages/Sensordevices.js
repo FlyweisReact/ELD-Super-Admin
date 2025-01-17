@@ -18,7 +18,7 @@ const Sensordevices = () => {
                 and integrity of loads.
               </div>
               <div className="mt-5">
-                <button className="bg-[#34B7C1] w-[296px] h-[45px] flex justify-center items-center gap-1 text-white">
+                <button className="bg-[#86e3ce] w-[296px] h-[45px] flex justify-center items-center gap-1 text-black font-bold">
                   <IoMdAdd />
                   Add Device
                 </button>
@@ -50,7 +50,7 @@ const Sensordevices = () => {
         </div>
         <div className="border border-1 border-[#D8D8D8] shadow rounded-md p-4 mt-4">
           <div className="flex items-center justify-between text-[#858B9A] pb-4">
-            <div className="w-[18px] h-[18px] rounded-full border border-1 border-[#34B7C1] "></div>
+            <div className="w-[18px] h-[18px] rounded-full border border-1 border-[#86e3ce] "></div>
             <p className="text-[20px] font-medium">Add a new device</p>
             <img src="../Vector6.png" alt="" />
           </div>
@@ -64,6 +64,7 @@ const Sensordevices = () => {
                 height="120"
                 style={{ borderRadius: "8px" }}
                 src="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1"
+                title="assest"
               ></iframe>
             </div>
           </div>

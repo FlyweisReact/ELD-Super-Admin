@@ -27,7 +27,7 @@ code {
 @tailwind utilities;
 
 .homebackground {
-  background: linear-gradient(115.83deg, #34b7c1 29.07%, #39d3ec 99.87%);
+  background: linear-gradient(115.83deg, #86E3CE 29.07%, #86E3CE 99.87%);
 }
 .roundBg {
   background: conic-gradient(
@@ -247,6 +247,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .vehicle-table tbody tr td {
   padding: 20px;
   font-size: 13px;
+  font-weight: 600;
 }
 .vehicle-table tbody tr:hover {
   background-color: rgb(232, 244, 255);

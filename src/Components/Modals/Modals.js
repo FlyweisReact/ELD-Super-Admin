@@ -1,9 +1,13 @@
 /** @format */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getApi, postApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { Modal, Drawer } from "antd";
-import { ButtonComponent, InputComponent } from "../HelpingComponent";
+import {
+  ButtonComponent,
+  InputComponent,
+  ReactSelect,
+} from "../HelpingComponents";
 import tickmark from "../../Assets/Vechicledetail/vihiclegallary.svg";
 import ReactApexChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +19,7 @@ import Select from "react-select";
 import { innerMenuOptions, statusMapping } from "../../constant/constant";
 
 const CreateNewUser = ({ handleClose, show, fetchApi }) => {
+  const companyId = localStorage.getItem("companyId");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [terminal, setTerminal] = useState("");
@@ -24,7 +29,6 @@ const CreateNewUser = ({ handleClose, show, fetchApi }) => {
   const [loading, setLoading] = useState(false);
   const [terminals, setTerminals] = useState({});
   const fullName = firstName + " " + lastName;
-  const companyId = localStorage.getItem("companyId");
 
   const payload = {
     firstName,
@@ -172,7 +176,7 @@ const CreateNewUser = ({ handleClose, show, fetchApi }) => {
               <ButtonComponent
                 label={"Add"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] w-[50%] h-[45px]  text-black font-bold border-[#86E3CE] flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -263,7 +267,7 @@ const ResetUserPassword = ({ open, handleCancel, userId, fetchApi }) => {
               <ButtonComponent
                 label={"Reset"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] font-bold border-[#86E3CE] w-[50%] h-[45px]  text-black flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -323,7 +327,7 @@ const EditUserDetails = ({ handleClose, show, fetchApi, userId, prevData }) => {
 
   useEffect(() => {
     if (show) {
-      getApi(endPoints.terminal.getAll({ limit: 50 }), {
+      getApi(endPoints.terminals.activeTerminal({ limit: 50 }), {
         setResponse: setTerminals,
       });
     }
@@ -440,7 +444,7 @@ const EditUserDetails = ({ handleClose, show, fetchApi, userId, prevData }) => {
               <ButtonComponent
                 label={"Submit"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] border-[#86E3CE] w-[50%] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -454,12 +458,37 @@ const EditUserDetails = ({ handleClose, show, fetchApi, userId, prevData }) => {
 };
 
 const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
+  const companyId = localStorage.getItem("companyId");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [timeZone, setTimeZone] = useState("");
   const [contact, setContact] = useState("");
-  const companyId = localStorage.getItem("companyId");
+  const [users, setUsers] = useState([]);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = inputRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["address"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setAddress(place?.formatted_address || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [inputRef, show]);
 
   const payload = {
     name,
@@ -468,6 +497,18 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
     contact,
     company: companyId,
   };
+
+  const fetchContact = () => {
+    getApi(endPoints.getAllSuperAdmin, {
+      setResponse: setUsers,
+    });
+  };
+
+  useEffect(() => {
+    if (show) {
+      fetchContact();
+    }
+  }, [show]);
 
   const resetHandler = () => {
     setName("");
@@ -536,12 +577,13 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
               <div>
                 <label className="text-[#8E8F8F]">Terminal Address *</label>
                 <br />
-                <InputComponent
-                  placeholder="Type here..."
+                <input
+                  type="text"
                   className="text-input"
-                  onChangeEvent={(e) => setAddress(e.target.value)}
+                  onChange={(e) => setAddress(e.target.value)}
                   value={address}
-                  required={true}
+                  required
+                  ref={inputRef}
                 />
               </div>
               <div>
@@ -558,6 +600,20 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
                   <option value={"Eastern Time (US & Canada)"}>
                     Eastern Time (US & Canada)
                   </option>
+                  <option value={"Central Time (US & Canada)"}>
+                    Central Time (US & Canada)
+                  </option>
+                  <option value={"Mountain Daylight Time (US & Canada)"}>
+                    Mountain Daylight Time (US & Canada)
+                  </option>
+                  <option value={"Mountain Standard Time (US & Canada)"}>
+                    Mountain Standard Time (US & Canada)
+                  </option>
+                  <option value={"Pacific Time (US & Canada)"}>
+                    Pacific Time (US & Canada)
+                  </option>
+                  <option value={"Arizona"}>Arizona</option>
+                  <option value={"Alaska"}>Alaska</option>
                 </select>
               </div>
             </div>
@@ -568,13 +624,21 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
                   Select terminal contact
                 </label>
                 <br />
-                <InputComponent
-                  placeholder=""
-                  className="text-input"
-                  onChangeEvent={(e) => setContact(e.target.value)}
+                <select
+                  className="text-select"
+                  onChange={(e) => setContact(e.target.value)}
+                  required
                   value={contact}
-                  required={true}
-                />
+                >
+                  <option value="">Select here</option>
+                  {users?.data?.docs?.map((item) => (
+                    <option value={item?._id} key={`super-admin${item?._id}`}>
+                      {returnFullName(item)
+                        ? returnFullName(item)
+                        : item?.email}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -591,7 +655,7 @@ const CreateTerminal = ({ handleClose, show, fetchApi, isEdit, prevData }) => {
               <ButtonComponent
                 label={"Submit"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] w-[50%] h-[45px]  text-black font-bold border-[#86E3CE] flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -635,6 +699,12 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
     terminalZipCode: "",
   });
 
+  useEffect(() => {
+    if(show){
+      setSelectedTab("Company Details")
+    }
+  },[show])
+
   const nextHandler = (value) => {
     setSelectedTab(value);
   };
@@ -649,7 +719,7 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    postApi(endPoints.company.create, payload, {
+    postApi(endPoints.companies.create, payload, {
       successMsg: "Created !",
       setLoading,
       additionalFunctions: [fetchApi, handleClose],
@@ -1165,7 +1235,6 @@ const AddCompany = ({ handleClose, show, fetchApi }) => {
   );
 };
 
-// Edit Company Details
 const EditCompany = ({ handleClose, show, fetchApi, prevData }) => {
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Company Details");
@@ -1237,7 +1306,7 @@ const EditCompany = ({ handleClose, show, fetchApi, prevData }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    putApi(endPoints.company.updateDetail(prevData?._id), payload, {
+    putApi(endPoints.companies.updateDetail(prevData?._id), payload, {
       successMsg: "updated !",
       setLoading,
       additionalFunctions: [fetchApi, handleClose],
@@ -2323,7 +2392,6 @@ const CreateTruck = ({ handleClose, show, fetchApi }) => {
     fd.append(`image`, image);
   });
 
-
   const submitHandler = (e) => {
     e.preventDefault();
     postApi(endPoints.vehicles.createVehicle, fd, {
@@ -2936,7 +3004,7 @@ const AssignDriverInTerminal = ({ handleClose, show, fetchApi, id }) => {
               <ButtonComponent
                 label={"Assign"}
                 className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] w-[50%] h-[45px]  text-black font-bold border-[#86E3CE] flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -3016,7 +3084,7 @@ const UnAssignDriverInTerminal = ({
               <ButtonComponent
                 label={"Unassign"}
                 className={
-                  "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] w-[180px] h-[45px]  text-black font-bold border-[#86E3CE] flex justify-center items-center gap-2"
                 }
                 isLoading={loading}
                 type="submit"
@@ -3030,6 +3098,7 @@ const UnAssignDriverInTerminal = ({
 };
 
 const CreateDriver = ({ handleClose, show, fetchApi }) => {
+  const companyId = localStorage.getItem("companyId");
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -3049,30 +3118,83 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
   const [cargoType, setCargoType] = useState("");
   const [breakCycle, setBreakCycle] = useState("");
   const [timeZone, setTimeZone] = useState("");
-  const companyId = localStorage.getItem("companyId");
+  const [image, setImage] = useState(null);
 
-  const payload = {
-    firstName,
-    lastName,
-    fullName,
-    email,
-    license,
-    cell,
-    mobileNumber: cell,
-    country,
-    state,
-    licenseExpire,
-    startDate,
-    note,
-    company: companyId,
-  };
+  const stateRef = useRef(null);
+  const countryRef = useRef(null);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = stateRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setState(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [stateRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = countryRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["country"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setCountry(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [countryRef, show]);
+
+  const fd = new FormData();
+  fd.append("firstName", firstName);
+  fd.append("lastName", lastName);
+  fd.append("fullName", fullName);
+  fd.append("email", email);
+  fd.append("license", license);
+  fd.append("cell", cell);
+  fd.append("mobileNumber", cell);
+  fd.append("state", state);
+  fd.append("licenseExpire", licenseExpire);
+  fd.append("startDate", startDate);
+  fd.append("note", note);
+  fd.append("image", image);
+  fd.append("company", companyId);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    postApi(endPoints.drivers.createDriver, payload, {
-      additionalFunctions: [(res) => setResponse(res), nextStep],
+    postApi(endPoints.drivers.createDriver, fd, {
+      additionalFunctions: [(res) => setResponse(res), nextStep, fetchApi],
       setLoading,
     });
+  };
+
+  const uploadImg = () => {
+    const target = document.getElementById("file");
+    target.click();
   };
 
   const nextStep = () => {
@@ -3131,17 +3253,19 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
 
           {step === 1 && (
             <form onSubmit={submitHandler}>
-              {/* <div className="upload-img-svg mt-4">
-                    <img
-                      src="https://www.svgrepo.com/show/382101/male-avatar-boy-face-man-user.svg"
-                      alt=""
-                    />
-                    <i
-                      className="fa-solid fa-pen"
-                      onClick={() => uploadImg()}
-                    ></i>
-                    <input type="file" id="file" style={{ display: "none" }} />
-                  </div> */}
+              <div className="upload-img-svg mt-4">
+                <img
+                  src="https://www.svgrepo.com/show/382101/male-avatar-boy-face-man-user.svg"
+                  alt=""
+                />
+                <i className="fa-solid fa-pen" onClick={() => uploadImg()}></i>
+                <input
+                  type="file"
+                  id="file"
+                  style={{ display: "none" }}
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
 
               <div className="flex-inputs">
                 <div className="w-[50%]">
@@ -3215,7 +3339,9 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-[#8E8F8F]">License</label>
+                  <label className="text-[#8E8F8F]">
+                    License <span className="text-[#a63019]">*</span>
+                  </label>
                   <br />
                   <InputComponent
                     className="text-input"
@@ -3233,11 +3359,14 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                     Country <span className="text-[#a63019]">*</span>
                   </label>
                   <br />
-                  <InputComponent
-                    className="text-input"
-                    onChangeEvent={(e) => setCountry(e.target.value)}
+
+                  <input
+                    type="text"
+                    onChange={(e) => setCountry(e.target.value)}
                     value={country}
                     required
+                    ref={countryRef}
+                    className="text-input"
                   />
                 </div>
                 <div>
@@ -3245,11 +3374,13 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                     License State <span className="text-[#a63019]">*</span>
                   </label>
                   <br />
-                  <InputComponent
-                    className="text-input"
-                    onChangeEvent={(e) => setState(e.target.value)}
+                  <input
+                    type="text"
+                    onChange={(e) => setState(e.target.value)}
                     value={state}
                     required
+                    ref={stateRef}
+                    className="text-input"
                   />
                 </div>
               </div>
@@ -3290,7 +3421,7 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                   <InputComponent
                     placeholder="Please enter note"
                     className="text-input"
-                    required={true}
+                    // required={true}
                     onChangeEvent={(e) => setNote(e.target.value)}
                     value={note}
                   />
@@ -3310,9 +3441,10 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86E3CE] border-[#86E3CE] w-[50%] h-[45px]  text-black font-bold  flex justify-center items-center gap-2"
                   }
                   type="submit"
+                  isLoading={loading}
                 />
               </div>
             </form>
@@ -3354,8 +3486,56 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                     <option value="USA 70 hours / 8 days (Interstate)">
                       USA 70 hours / 8 days (Interstate)
                     </option>
-                    <option value="Alaska 70 hours / 8 days (Interstate)">
-                      Alaska 70 hours / 8 days (Interstate)
+                    <option value="Alaska 70 hours / 7 days (Interstate)">
+                      Alaska 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Alaska 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Alaska 80 hours / 8 days (Interstate)
+                    </option>
+                    <option value="Caifornia 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Caifornia 80 hours / 8 days (Interstate)
+                    </option>
+                    <option value="Florida 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Florida 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Florida 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Florida 80 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Oregon 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Oregon 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Oregon 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Oregon 80 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Texas 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Texas 70 hours / 7 days (Interstate)
+                    </option>
+
+                    <option value="USA 60 hours / 7 days (Interstate)">
+                      {" "}
+                      USA 60 hours / 7 days (Interstate)
+                    </option>
+                    <option value="USA 70 hours / 8 days (Interstate)">
+                      {" "}
+                      USA 70 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Wisconsin 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Wisconsin 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Wisconsin 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Wisconsin 80 hours / 8 days (Interstate)
                     </option>
                   </select>
                 </div>
@@ -3432,7 +3612,7 @@ const CreateDriver = ({ handleClose, show, fetchApi }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86E3CE] w-[50%] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                   }
                   type="submit"
                   isLoading={loading}
@@ -3471,27 +3651,78 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
   const [restrictPersonalConveyance, setRestrictPersonalConveyance] =
     useState("");
   const [restrictYardMove, setRestrictYardMove] = useState("");
+  const [image, setImage] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const stateRef = useRef(null);
+  const countryRef = useRef(null);
 
-  const payload = {
-    firstName,
-    lastName,
-    fullName,
-    email,
-    license,
-    cell,
-    mobileNumber: cell,
-    country,
-    state,
-    licenseExpire,
-    startDate,
-    note,
-  };
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = stateRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setState(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [stateRef, show]);
+
+  useEffect(() => {
+    if (window.google && show) {
+      const inputElement = countryRef.current;
+      if (inputElement) {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          inputElement,
+          {
+            types: ["country"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          setCountry(place?.name || "");
+        });
+
+        return () => {
+          window.google.maps.event.clearInstanceListeners(autocomplete);
+        };
+      }
+    }
+  }, [countryRef, show]);
+
+  const fd = new FormData();
+  fd.append("firstName", firstName);
+  fd.append("lastName", lastName);
+  fd.append("fullName", fullName);
+  fd.append("email", email);
+  fd.append("license", license);
+  fd.append("cell", cell);
+  fd.append("mobileNumber", cell);
+  fd.append("state", state);
+  fd.append("licenseExpire", licenseExpire);
+  fd.append("startDate", startDate);
+  fd.append("note", note);
+  if (image) {
+    fd.append("image", image);
+  }
 
   const updateBasicDetails = (e) => {
     e.preventDefault();
-    putApi(endPoints.drivers.updateDriver(data?._id), payload, {
+    putApi(endPoints.drivers.updateDriver(data?._id), fd, {
       setLoading,
-      additionalFunctions: [() => setStep(step + 1)],
+      additionalFunctions: [() => setStep(step + 1), fetchApi],
     });
   };
 
@@ -3503,6 +3734,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
       cargoType,
       breakCycle,
       timeZone,
+      cycleInSec: "252000",
     };
     putApi(endPoints.drivers.updateDriver(data?._id), payload, {
       additionalFunctions: [() => setStep(step + 1)],
@@ -3533,29 +3765,40 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
   }, [show]);
 
   useEffect(() => {
-    if (show) {
-      setFirstName(data?.firstName);
-      setLastName(data?.lastName);
-      setEmail(data?.email);
-      setLicense(data?.license);
-      setCell(data?.cell);
-      setCountry(data?.country);
-      setState(data?.state);
-      setLicenseExpire(data?.licenseExpire);
-      setStartDate(data?.startDate);
-      setNote(data?.note);
-      setFullName(data?.fullName);
-      setRestart(data?.reStart);
-      setCycle(data?.cycle);
-      setCargoType(data?.cargoType);
-      setBreakCycle(data?.breakCycle);
-      setBlockDriverEdits(data?.blockDriverEdits);
-      setDisableELDVin(data?.disableELDVin);
-      setExtend(data?.extend14hoursWithSplitSleeperRule);
-      setRestrictPersonalConveyance(data?.restrictPersonalConveyance);
-      setRestrictYardMove(data?.restrictYardMove);
+    if (show && data) {
+      getApi(endPoints.drivers.getDriverDetail(data?._id), {
+        setResponse: setDetail,
+        showErr: false,
+      });
     }
-  }, [show]);
+  }, [show, data]);
+
+  useEffect(() => {
+    if (show && detail) {
+      const item = detail?.data;
+      setFirstName(item?.firstName);
+      setLastName(item?.lastName);
+      setEmail(item?.email);
+      setLicense(item?.license);
+      setCell(item?.cell);
+      setState(item?.state);
+      setLicenseExpire(item?.licenseExpire);
+      setStartDate(item?.startDate?.slice(0, 10));
+      setNote(item?.note);
+      setFullName(item?.fullName);
+      setRestart(item?.reStart);
+      setCycle(item?.cycle);
+      setCargoType(item?.cargoType);
+      setBreakCycle(item?.breakCycle);
+      setTimeZone(item?.timeZone);
+      setBlockDriverEdits(item?.blockDriverEdits);
+      setDisableELDVin(item?.disableELDVin);
+      setExtend(item?.extend14hoursWithSplitSleeperRule);
+      setRestrictPersonalConveyance(item?.restrictPersonalConveyance);
+      setRestrictYardMove(item?.restrictYardMove);
+      setCountry(item?.country);
+    }
+  }, [detail, show]);
 
   return (
     <Modal
@@ -3570,15 +3813,24 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
         <hr />
         <div className="pl-5 pr-5">
           <div className="add-steps mt-2">
-            <div className={`step ${step === 1 ? "active" : ""}`}>
+            <div
+              className={`step cursor-pointer ${step === 1 ? "active" : ""}`}
+              onClick={() => setStep(1)}
+            >
               <p className="count">1</p>
               <p className="title">Basic</p>
             </div>
-            <div className={`step ${step === 2 ? "active" : ""}`}>
+            <div
+              className={`step cursor-pointer ${step === 2 ? "active" : ""}`}
+              onClick={() => setStep(2)}
+            >
               <p className="count">2</p>
               <p className="title">Cycle Info</p>
             </div>
-            <div className={`step ${step === 3 ? "active" : ""}`}>
+            <div
+              className={`step cursor-pointer ${step === 3 ? "active" : ""}`}
+              onClick={() => setStep(3)}
+            >
               <p className="count">3</p>
               <p className="title">Settings</p>
             </div>
@@ -3586,6 +3838,27 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
 
           {step === 1 && (
             <form onSubmit={updateBasicDetails} className="mt-5">
+              <div className="upload-img-svg mt-4">
+                <img
+                  src={
+                    detail?.data?.profilePic
+                      ? detail?.data?.profilePic
+                      : "https://www.svgrepo.com/show/382101/male-avatar-boy-face-man-user.svg"
+                  }
+                  alt=""
+                />
+                <i
+                  className="fa-solid fa-pen"
+                  onClick={() => document.getElementById("file").click()}
+                ></i>
+                <input
+                  type="file"
+                  id="file"
+                  style={{ display: "none" }}
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+
               <div className="flex-inputs">
                 <div className="w-[50%]">
                   <label className="text-[#8E8F8F]">
@@ -3676,11 +3949,13 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     Country <span className="text-[#a63019]">*</span>
                   </label>
                   <br />
-                  <InputComponent
-                    className="text-input"
-                    onChangeEvent={(e) => setCountry(e.target.value)}
+                  <input
+                    type="text"
+                    onChange={(e) => setCountry(e.target.value)}
                     value={country}
                     required
+                    ref={countryRef}
+                    className="text-input"
                   />
                 </div>
                 <div>
@@ -3688,11 +3963,13 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     License State <span className="text-[#a63019]">*</span>
                   </label>
                   <br />
-                  <InputComponent
-                    className="text-input"
-                    onChangeEvent={(e) => setState(e.target.value)}
+                  <input
+                    type="text"
+                    onChange={(e) => setState(e.target.value)}
                     value={state}
                     required
+                    ref={stateRef}
+                    className="text-input"
                   />
                 </div>
               </div>
@@ -3733,7 +4010,6 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                   <InputComponent
                     placeholder="Please enter note"
                     className="text-input"
-                    required={true}
                     onChangeEvent={(e) => setNote(e.target.value)}
                     value={note}
                   />
@@ -3753,7 +4029,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86e3ce] w-[50%] h-[45px] text-black font-bold flex justify-center items-center gap-2"
                   }
                   type="submit"
                   isLoading={loading}
@@ -3800,8 +4076,56 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     <option value="USA 70 hours / 8 days (Interstate)">
                       USA 70 hours / 8 days (Interstate)
                     </option>
-                    <option value="Alaska 70 hours / 8 days (Interstate)">
-                      Alaska 70 hours / 8 days (Interstate)
+                    <option value="Alaska 70 hours / 7 days (Interstate)">
+                      Alaska 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Alaska 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Alaska 80 hours / 8 days (Interstate)
+                    </option>
+                    <option value="Caifornia 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Caifornia 80 hours / 8 days (Interstate)
+                    </option>
+                    <option value="Florida 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Florida 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Florida 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Florida 80 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Oregon 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Oregon 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Oregon 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Oregon 80 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Texas 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Texas 70 hours / 7 days (Interstate)
+                    </option>
+
+                    <option value="USA 60 hours / 7 days (Interstate)">
+                      {" "}
+                      USA 60 hours / 7 days (Interstate)
+                    </option>
+                    <option value="USA 70 hours / 8 days (Interstate)">
+                      {" "}
+                      USA 70 hours / 8 days (Interstate)
+                    </option>
+
+                    <option value="Wisconsin 70 hours / 7 days (Interstate)">
+                      {" "}
+                      Wisconsin 70 hours / 7 days (Interstate)
+                    </option>
+                    <option value="Wisconsin 80 hours / 8 days (Interstate)">
+                      {" "}
+                      Wisconsin 80 hours / 8 days (Interstate)
                     </option>
                   </select>
                 </div>
@@ -3881,7 +4205,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86e3ce] w-[50%] h-[45px] text-black font-bold flex justify-center items-center gap-2"
                   }
                   type="submit"
                   isLoading={loading}
@@ -3898,6 +4222,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     type="checkbox"
                     className="text-input mr-4"
                     onChange={() => setBlockDriverEdits(!blockDriverEdits)}
+                    checked={blockDriverEdits}
                   />
                   <label className="text-[#8E8F8F]">Block Driver edits</label>
                 </div>
@@ -3909,6 +4234,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     type="checkbox"
                     className="text-input mr-4"
                     onChange={() => setDisableELDVin(!disableELDVin)}
+                    checked={disableELDVin}
                   />
                   <label className="text-[#8E8F8F]">Disable ELD VIN</label>
                 </div>
@@ -3922,6 +4248,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     onChange={() =>
                       setExtend(!extend14hoursWithSplitSleeperRule)
                     }
+                    checked={extend14hoursWithSplitSleeperRule}
                   />
                   <label className="text-[#8E8F8F]">
                     Extend 14 hours with Split Sleeper Rule
@@ -3937,6 +4264,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     onChange={() =>
                       setRestrictPersonalConveyance(!restrictPersonalConveyance)
                     }
+                    checked={restrictPersonalConveyance}
                   />
                   <label className="text-[#8E8F8F]">
                     Restrict Personal Conveyance
@@ -3949,6 +4277,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                     type="checkbox"
                     className="text-input mr-4"
                     onChange={() => setRestrictYardMove(!restrictYardMove)}
+                    checked={restrictYardMove}
                   />
                   <label className="text-[#8E8F8F]">Restrict Yard Move</label>
                 </div>
@@ -3967,7 +4296,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
                 <ButtonComponent
                   label={"Next"}
                   className={
-                    "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
+                    "bg-[#86e3ce] w-[50%] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                   }
                   type="submit"
                   isLoading={loading}
@@ -4040,92 +4369,10 @@ const UnAssignDriver = ({ show, handleClose, data, fetchApi }) => {
               <ButtonComponent
                 label={"Unassign"}
                 className={
-                  "bg-[#34B7C1] w-[180px] h-[45px]  text-white flex justify-center items-center gap-2"
+                  "bg-[#86E3CE] border-[#86E3CE] w-[180px] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
                 }
                 type="submit"
                 isLoading={loading}
-              />
-            </div>
-          </div>
-        </form>
-      </div>
-    </Modal>
-  );
-};
-
-const ShareApiKey = ({ show, handleClose }) => {
-  return (
-    <Modal
-      centered
-      title="Share Link with API Partner"
-      open={show}
-      onCancel={handleClose}
-      footer={null}
-      width={600}
-    >
-      <div className="reset-password-modal">
-        <hr />
-        <form>
-          <div className="pl-5 pr-5">
-            <div className="flex-inputs" style={{ flexWrap: "wrap" }}>
-              <div style={{ width: "100%" }}>
-                <label>
-                  Select API Partner  <span style={{ color: "red" }}>*</span>
-                </label>{" "}
-                <br />
-                <select className="text-select">
-                  <option>Select API Partner</option>
-                </select>
-              </div>
-              <div style={{ width: "100%" }}>
-                <label>
-                  Select Driver <span style={{ color: "red" }}>*</span>
-                </label>{" "}
-                <br />
-                <select className="text-select">
-                  <option>Select driver from list </option>
-                </select>
-              </div>
-              <div style={{ width: "100%" }}>
-                <label>
-                  Select Truck Number(s) <span style={{ color: "red" }}>*</span>
-                </label>{" "}
-                <br />
-                <select className="text-select">
-                  <option>Select Truck Number(s) from list </option>
-                </select>
-              </div>
-              <div style={{ width: "100%" }}>
-                <label>
-                  Select Trailer Number(s){" "}
-                  <span style={{ color: "red" }}>*</span>
-                </label>{" "}
-                <br />
-                <select className="text-select">
-                  <option>Select Trailer Number(s) from list </option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex-inputs">
-              <div style={{ width: "100%" }}>
-                <input type="checkbox" className="text-input mr-4" />
-                <label className="text-[#8E8F8F]">
-                  {" "}
-                  I agree to share NXT Location Sharing API Key with API
-                  Partner. This will give API Partner access to location
-                  information for selected vehicles.
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-5 gap-5">
-              <ButtonComponent
-                label={"Send API Key"}
-                className={
-                  "w-[156px] h-[45px] bg-[#34B7C1] font-semibold text-white rounded-3xl"
-                }
-                type="button"
               />
             </div>
           </div>
@@ -5485,94 +5732,6 @@ const EditHomeTerminal = ({ show, handleClose, fetchProfile, data }) => {
   );
 };
 
-const EditCompanyAddress = ({ show, handleClose, type }) => {
-  return (
-    <Modal
-      centered
-      title={type}
-      open={show}
-      onCancel={handleClose}
-      footer={null}
-      width={800}
-    >
-      <div className="reset-password-modal">
-        <hr />
-        <form>
-          <div className="pl-5 pr-5">
-            <div className="flex-inputs">
-              <div>
-                <label className="text-[#8E8F8F]">
-                  Address Line 1 <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-              <div>
-                <label className="text-[#8E8F8F]">
-                  Address Line 2 <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-            </div>
-
-            <div className="flex-inputs">
-              <div>
-                <label className="text-[#8E8F8F]">
-                  City <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-              <div>
-                <label className="text-[#8E8F8F]">
-                  State <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-            </div>
-
-            <div className="flex-inputs">
-              <div>
-                <label className="text-[#8E8F8F]">
-                  Country <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-              <div>
-                <label className="text-[#8E8F8F]">
-                  Zipcode <span style={{ color: "red" }}>*</span>
-                </label>
-                <br />
-                <InputComponent className="text-input" required />
-              </div>
-            </div>
-
-            <div className="flex justify-between mt-5 gap-5">
-              <ButtonComponent
-                label={"Cancel"}
-                className={
-                  "bg-[#fff] w-[50%] h-[45px] text-[#eb5757] flex justify-center items-center gap-2 border border-red-500"
-                }
-                type="button"
-              />
-              <ButtonComponent
-                label={"Update"}
-                className={
-                  "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
-                }
-                type="button"
-              />
-            </div>
-          </div>
-        </form>
-      </div>
-    </Modal>
-  );
-};
-
 const MenuBar = ({ show, handleClose }) => {
   const navigate = useNavigate();
   const data = [
@@ -5593,16 +5752,8 @@ const MenuBar = ({ show, handleClose }) => {
       title: "Geofences",
     },
     {
-      link: "/Dashcams",
-      title: "Dashcams",
-    },
-    {
       link: "/Reports",
       title: "Reports",
-    },
-    {
-      link: "/Iftatrips",
-      title: "IFTA",
     },
     {
       link: "/Iftareports",
@@ -5670,7 +5821,7 @@ const MenuBar = ({ show, handleClose }) => {
       closable={false}
       onClose={handleClose}
       open={show}
-      style={{ backgroundColor: "#34B7C1" }}
+      style={{ backgroundColor: "#86E3CE" }}
     >
       <div className="menu-bar">
         <div className="close-icon">
@@ -5971,7 +6122,189 @@ const EditHour = ({ show, handleClose }) => {
   );
 };
 
+const InspectionMode = ({ show, handleClose, fetchProfile }) => {
+  const companyId = localStorage.getItem("companyId");
+  const [step, setStep] = useState(1);
+  const [allDrivers, setAllDrivers] = useState(null);
+  const [driverQuery, setDriverQuery] = useState("");
+  const [selectedDriver, setSelectedDriver] = useState({});
+  const [allVehicles, setAllVehicles] = useState({});
+  const [truck, setTruck] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [webCode, setWebCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const payload = {
+    driver: selectedDriver?.value,
+    truck,
+    startDate,
+    endDate,
+    webCode,
+    company: companyId,
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    postApi(endPoints.inspectionMode.create, payload, {
+      successMsg: "Success !",
+      setLoading,
+      additionalFunctions: [handleClose, fetchProfile],
+    });
+  };
+
+  const fetchAllDrivers = useCallback(() => {
+    const queryParams = new URLSearchParams({
+      page: 1,
+      limit: 100,
+      search: driverQuery,
+      company: companyId,
+    });
+
+    getApi(endPoints.drivers.allDriverQuery(queryParams?.toString()), {
+      setResponse: setAllDrivers,
+      showErr: false,
+    });
+  }, [driverQuery]);
+
+  const fetchVehicles = () => {
+    getApi(endPoints.vehicles.getActiveVehicle({ limit: 100 }), {
+      setResponse: setAllVehicles,
+    });
+  };
+
+  useEffect(() => {
+    if (show) {
+      fetchAllDrivers();
+    }
+  }, [show, fetchAllDrivers]);
+
+  useEffect(() => {
+    if (show) {
+      fetchVehicles();
+    }
+  }, [show]);
+
+  const driverOptions = allDrivers?.data?.docs?.map((item) => ({
+    value: item?._id,
+    label: returnFullName(item),
+  }));
+
+  return (
+    <Modal
+      centered
+      title=""
+      open={show}
+      onCancel={handleClose}
+      footer={null}
+      width={600}
+    >
+      {step === 1 && (
+        <div className="inspection_container">
+          <h5>Are you sure you want to do inspection</h5>
+
+          <div className="btn_container">
+            <button className="save_btn" onClick={() => setStep(2)}>
+              Yes
+            </button>
+            <button className="cancel_btn" onClick={() => handleClose()}>
+              No
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="reset-password-modal">
+          <form onSubmit={submitHandler}>
+            <div className="pl-5 pr-5">
+              <div className="w-full mt-5">
+                <label className="text-[#8E8F8F]">Select Driver</label>
+                <br />
+                <ReactSelect
+                  options={driverOptions}
+                  setValue={setSelectedDriver}
+                  value={selectedDriver}
+                  placeholder="Select Driver"
+                  inputValue={setDriverQuery}
+                  className="text-select"
+                />
+              </div>
+              <div className="w-full mt-5">
+                <label className="text-[#8E8F8F]">Select Vehicle</label>
+                <br />
+                <select
+                  className="text-select"
+                  onChange={(e) => setTruck(e.target.value)}
+                  value={truck}
+                  required
+                >
+                  <option value="">Select Vehicle</option>
+                  {allVehicles?.data?.docs?.map((item) => (
+                    <option key={item?._id} value={item?._id}>
+                      {" "}
+                      {item?.vehicleNumber}{" "}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full mt-5">
+                <label className="text-[#8E8F8F]">Start Date</label>
+                <br />
+                <input
+                  type="date"
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="text-input"
+                />
+              </div>
+              <div className="w-full mt-5">
+                <label className="text-[#8E8F8F]">End Date</label>
+                <br />
+                <input
+                  type="date"
+                  className="text-input"
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div className="w-full mt-5">
+                <label className="text-[#8E8F8F]">Web code</label>
+                <br />
+                <input
+                  type="text"
+                  className="text-input"
+                  onChange={(e) => setWebCode(e.target.value)}
+                  value={webCode}
+                />
+              </div>
+
+              <div className="flex justify-between mt-5 gap-5">
+                <ButtonComponent
+                  label={"Cancel"}
+                  className={
+                    "bg-[#fff] w-[50%] h-[45px] text-[#eb5757] flex justify-center items-center gap-2 border border-red-500"
+                  }
+                  type="button"
+                  onClickEvent={handleClose}
+                />
+                <ButtonComponent
+                  label={"Save"}
+                  className={
+                    "bg-[#86E3CE] border-[#86E3CE]  w-[50%] h-[45px]  text-black font-bold flex justify-center items-center gap-2"
+                  }
+                  type="submit"
+                  isLoading={loading}
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+    </Modal>
+  );
+};
+
 export {
+  InspectionMode,
   EditCompany,
   CreateAdmin,
   CreateNewUser,
@@ -5989,12 +6322,10 @@ export {
   CreateDriver,
   EditDriver,
   UnAssignDriver,
-  ShareApiKey,
   EditElog,
   EditElogEvent,
   ViewProfile,
   EditHomeTerminal,
-  EditCompanyAddress,
   MenuBar,
   AlertDateSelector,
   EditThreshold,

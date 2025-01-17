@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import { SectionHeading } from "../Components/HelpingComponent";
+import { SectionHeading } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout/TableLayout";
 
 const Subscription = () => {

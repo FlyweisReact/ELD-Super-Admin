@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { postApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import ClipLoader from "react-spinners/ClipLoader";
-import { InputComponent } from "../HelpingComponent";
+import { InputComponent } from "../HelpingComponents";
 import { SignInWithFirebase } from "../../utils/utils";
 
 const Login = () => {

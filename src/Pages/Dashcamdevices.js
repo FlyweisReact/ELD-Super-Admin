@@ -18,7 +18,7 @@ const Dashcamdevices = () => {
                 analysis and driver behavior monitoring.
               </div>
               <div className="mt-5">
-                <button className="bg-[#34B7C1] w-[296px] h-[45px] flex justify-center items-center gap-1 text-white">
+                <button className="bg-[#86e3ce] w-[296px] h-[45px] flex justify-center items-center gap-1 text-black font-bold">
                   <IoMdAdd />
                   Add Device
                 </button>

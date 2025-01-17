@@ -8,7 +8,7 @@ import {
   Pagination,
   SectionHeading,
   Tabs,
-} from "../Components/HelpingComponent";
+} from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout/TableLayout";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
@@ -383,12 +383,35 @@ const Logbook = () => {
           tbody={finalData}
         />
 
-        <Pagination
-          className={"mt-5"}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+        {selectedTab === "Active" && (
+          <Pagination
+            className={"mt-5"}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            hasNextPage={activeDrivers?.data?.hasNextPage}
+            hasPrevPage={activeDrivers?.data?.hasPrevPage}
+          />
+        )}
+
+        {selectedTab === "Inactive" && (
+          <Pagination
+            className={"mt-5"}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            hasNextPage={inactiveBody?.data?.hasNextPage}
+            hasPrevPage={inactiveBody?.data?.hasPrevPage}
+          />
+        )}
+
+        {selectedTab === "All" && (
+          <Pagination
+            className={"mt-5"}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            hasNextPage={allDrivers?.data?.hasNextPage}
+            hasPrevPage={allDrivers?.data?.hasPrevPage}
+          />
+        )}
       </div>
     </section>
   );

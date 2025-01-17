@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { IoArrowForward } from "react-icons/io5";
 import { postApi } from "../../Repository/Api";
-import { InputComponent } from "../HelpingComponent";
+import { InputComponent } from "../HelpingComponents";
 import endPoints from "../../Repository/apiConfig";
 import { ClipLoader } from "react-spinners";
 import { logo } from "../../Assets";

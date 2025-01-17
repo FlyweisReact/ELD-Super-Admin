@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { Loader, SectionHeading } from "../../Components/HelpingComponent";
+import { Loader, SectionHeading } from "../../Components/HelpingComponents";
 import { CreateAdmin } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { deleteApi, getApi } from "../../Repository/Api";

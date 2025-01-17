@@ -4,7 +4,7 @@ import { Dropdown } from "antd";
 import React, { useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
-import { Tabs } from "../../Components/HelpingComponent";
+import { Tabs } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 

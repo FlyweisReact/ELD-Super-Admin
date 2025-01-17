@@ -5,7 +5,7 @@ import {
   Pagination,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
@@ -54,7 +54,8 @@ const Diagnosticevents = () => {
       />
       <Pagination
         className={"mt-5"}
-        totalPages={data?.data?.totalPages}
+        hasNextPage={data?.data?.hasNextPage}
+        hasPrevPage={data?.data?.hasPrevPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />

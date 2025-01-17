@@ -18,7 +18,7 @@ function AutocompleteSearch() {
   };
 
   const fetchCompanyListing = useCallback(() => {
-    getApi(endPoints.company.getAll({ limit: 50, search: inputValue }), {
+    getApi(endPoints.companies.getAll({ limit: 50, search: inputValue }), {
       setResponse: setData,
     });
   }, [inputValue]);

@@ -1,7 +1,6 @@
 /** @format */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { LuArrowUpDown } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { getApi, putApi } from "../../Repository/Api";
@@ -17,9 +16,34 @@ import {
   Pagination,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents.js";
 import TableLayout from "../../Components/TableLayout/TableLayout";
-import { returnFullName } from "../../utils/utils";
+import { returnFullName, formatDateInEST } from "../../utils/utils";
+
+const CheckDeviceConnection = (status) => {
+  if (status === "Connected") {
+    return (
+      <div className="logbook-device-connect connected">
+        <span className="color-dot" />
+        Connected
+      </div>
+    );
+  } else if (status === "Disconnected") {
+    return (
+      <div className="logbook-device-connect disconnected">
+        <span className="color-dot" />
+        Disconnected
+      </div>
+    );
+  } else {
+    return (
+      <div className="logbook-device-connect">
+        <span className="color-dot" />
+        {status}
+      </div>
+    );
+  }
+};
 
 const Userroles = () => {
   const [adduser, setaddUser] = useState(false);
@@ -74,11 +98,11 @@ const Userroles = () => {
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${users?.data?.totalDocs})`,
+      label: `Active (${users?.data?.totalDocs || 0})`,
     },
     {
       value: "Deactivated",
-      label: `Deactivated (${deactiveUser?.data?.totalDocs})`,
+      label: `Deactivated (${deactiveUser?.data?.totalDocs || 0})`,
     },
   ];
 
@@ -86,10 +110,10 @@ const Userroles = () => {
     return (
       <div className="flex driver-actions-btn">
         <button
-          className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+          className="bg-[#86E3CE] w-[173px] flex justify-center items-center gap-2  rounded-lg text-black font-bold h-[45px]"
           onClick={() => setaddUser(true)}
         >
-          <IoMdAdd style={{ color: "white" }} /> Add User
+          <IoMdAdd style={{ color: "#000" }} /> Add User
         </button>
       </div>
     );
@@ -108,6 +132,12 @@ const Userroles = () => {
     i?.terminal && (
       <div className="light-green-highlight-text">{i?.terminal?.name}</div>
     ),
+    <div>
+      {CheckDeviceConnection(i?.isDeviceConnected)}
+      {i?.lastLogout && (
+        <span>Last logout at {formatDateInEST(i?.lastLogout)}</span>
+      )}
+    </div>,
     <Dropdown
       menu={{
         items: [
@@ -169,23 +199,23 @@ const Userroles = () => {
     i?.terminal && (
       <div className="light-green-highlight-text">{i?.terminal?.name}</div>
     ),
+    <div>
+      {CheckDeviceConnection(i?.isDeviceConnected)}
+      {i?.lastLogout && (
+        <span>Last logout at {formatDateInEST(i?.lastLogout)}</span>
+      )}
+    </div>,
     <button className="activate-btn" onClick={() => deativeUserHandler(i?._id)}>
       Activate
     </button>,
   ]);
 
   const activeTableHead = [
-    <div className="flex justify-center items-center gap-2">
-      Name <LuArrowUpDown />
-    </div>,
+    "Name",
     "Email",
-    <div className="flex justify-center items-center gap-2">
-      Roles <LuArrowUpDown />
-    </div>,
-    <div className="flex justify-center items-center gap-2">
-      Terminals <LuArrowUpDown />
-    </div>,
-
+    "Roles",
+    "Terminals",
+    "Session Activity",
     "Actions",
   ];
 
@@ -209,6 +239,7 @@ const Userroles = () => {
         fetchApi={fetchUsers}
         prevData={prevDetail}
       />
+      
       <div className="p-5">
         <SectionHeading title={"User Roles"} />
         <Tabs
@@ -236,13 +267,15 @@ const Userroles = () => {
 
         {selectedTab === "Active" ? (
           <Pagination
-            totalPages={users?.data?.totalPages}
+            hasNextPage={users?.data?.hasNextPage}
+            hasPrevPage={users?.data?.hasPrevPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
         ) : (
           <Pagination
-            totalPages={deactiveUser?.data?.totalPages}
+            hasNextPage={deactiveUser?.data?.hasNextPage}
+            hasPrevPage={deactiveUser?.data?.hasPrevPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />

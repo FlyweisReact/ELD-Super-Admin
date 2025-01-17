@@ -8,7 +8,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import {
   SectionHeading,
   ButtonComponent,
-} from "../Components/HelpingComponent";
+} from "../Components/HelpingComponents.js";
 import style from "../css/modules/profile.module.css";
 import { getApi, putApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";

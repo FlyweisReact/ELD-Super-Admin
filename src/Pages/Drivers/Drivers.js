@@ -11,17 +11,18 @@ import {
   Pagination,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents.js";
 import {
   CreateDriver,
   EditDriver,
   UnAssignDriver,
 } from "../../Components/Modals/Modals.js";
 import TableLayout from "../../Components/TableLayout/TableLayout";
-import { returnFullName } from "../../utils/utils";
+import { returnFullName, formatDateInEST } from "../../utils/utils";
 import { Link } from "react-router-dom";
 
 const Drivers = () => {
+  const companyId = localStorage.getItem("companyId");
   const [Editdriver, setEditdriver] = useState(false);
   const [selectedTab, setselectedTab] = useState("Active");
   const [data, setData] = useState({});
@@ -35,7 +36,6 @@ const Drivers = () => {
   const [inactiveDrivers, setInactiveDrivers] = useState({});
   const [driverData, setDriverData] = useState({});
   const allIds = data?.data?.docs?.map((i) => i?._id);
-  const companyId = localStorage.getItem("companyId");
 
   const pushInArr = (id) => {
     const alreadyPresent = ids.some((i) => i === id);
@@ -133,15 +133,15 @@ const Drivers = () => {
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${data?.data?.totalDocs})`,
+      label: `Active (${data?.data?.totalDocs || 0})`,
     },
     {
       value: "Inactive",
-      label: `Inactive (${inactiveDrivers?.data?.totalDocs}) `,
+      label: `Inactive (${inactiveDrivers?.data?.totalDocs || 0}) `,
     },
     {
       value: "Deleted",
-      label: `Deleted (${deletedDriver?.data?.totalDocs})`,
+      label: `Deleted (${deletedDriver?.data?.totalDocs || 0})`,
     },
   ];
 
@@ -163,10 +163,10 @@ const Drivers = () => {
         )}
 
         <button
-          className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+          className="bg-[#86E3CE] w-[173px] flex justify-center items-center gap-2  rounded-lg text-black font-bold h-[45px]"
           onClick={() => setOpen(true)}
         >
-          <IoMdAdd style={{ color: "white" }} /> Add Driver
+          <IoMdAdd color="#000" /> Add Driver
         </button>
       </div>
     );
@@ -194,8 +194,11 @@ const Drivers = () => {
       onChange={() => pushInArr(i._id)}
       checked={checkIfAlreadyPresent(i._id)}
     />,
-    returnFullName(i),
-    i?.createdAt?.slice(0, 10),
+    <div className="profile-pic-container">
+      {i?.profilePic && <img src={i?.profilePic} alt="" />}
+      <span> {returnFullName(i)} </span>
+    </div>,
+    i?.createdAt && formatDateInEST(i?.createdAt),
     i?.mobileNumber,
     i?.truck && (
       <div
@@ -211,7 +214,7 @@ const Drivers = () => {
     ),
     i?.timeZone,
     i?.license,
-    "",
+    i?.mode,
     i?.cycle,
     i?.reStart,
     i?.break,
@@ -221,7 +224,7 @@ const Drivers = () => {
           {
             label: (
               <div
-                className="text-[#8E8F8F] cursor-pointer"
+                className="text-[#8E8F8F] cursor-pointer font-semibold"
                 onClick={() => {
                   setDriverData(i);
                   setEditdriver(true);
@@ -236,7 +239,7 @@ const Drivers = () => {
           {
             label: (
               <div
-                className="text-[#F56C89] text-left cursor-pointer"
+                className="text-[#F56C89] text-left cursor-pointer font-semibold"
                 onClick={() => deleteHandler(i._id)}
               >
                 <i className="fa-solid fa-trash-can"></i> Delete
@@ -256,11 +259,16 @@ const Drivers = () => {
 
   const deletedTableBody = deletedDriver?.data?.docs?.map((i) => [
     returnFullName(i),
-    <Link to={`/Logbook/${i?._id}`}>View Logbook</Link>,
-    i?.createdAt?.slice(0, 10),
-    i?.deleteDate?.slice(0, 10),
+    <Link
+      to={`/Logbook/${i?._id}`}
+      style={{ color: "blue", textDecoration: "underline" }}
+    >
+      View Logbook
+    </Link>,
+    i?.createdAt && formatDateInEST(i?.createdAt),
+    i?.deleteDate && formatDateInEST(i?.deleteDate),
     i?.license,
-    "",
+    i?.mode,
     i?.mobileNumber,
     i?.email,
     i?.cycle,
@@ -315,8 +323,8 @@ const Drivers = () => {
       </div>
     ),
     i?.timeZone,
-    i?.license ? i?.license : "---",
-    "---",
+    i?.license,
+    i?.mode,
     i?.cycle,
     i?.reStart,
     i?.break,
@@ -326,7 +334,7 @@ const Drivers = () => {
           {
             label: (
               <div
-                className="text-[#F56C89] text-left cursor-pointer"
+                className="text-[#F56C89] text-left cursor-pointer font-semibold"
                 onClick={() => deleteHandler(i._id)}
               >
                 <i className="fa-solid fa-trash-can"></i> Delete
@@ -337,7 +345,7 @@ const Drivers = () => {
           {
             label: (
               <div
-                className="text-[#2787db] text-left cursor-pointer"
+                className="text-[#2787db] text-left cursor-pointer font-semibold"
                 onClick={() => activateDriver(i._id)}
               >
                 <i className="fa-solid fa-user-pen"></i> Activate
@@ -354,6 +362,7 @@ const Drivers = () => {
       </div>
     </Dropdown>,
   ]);
+
   return (
     <>
       <CreateDriver
@@ -395,7 +404,8 @@ const Drivers = () => {
             />
             <Pagination
               className={"mt-5"}
-              totalPages={data?.data?.totalPages}
+              hasNextPage={data?.data?.hasNextPage}
+              hasPrevPage={data?.data?.hasPrevPage}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
@@ -421,8 +431,9 @@ const Drivers = () => {
             />
             <Pagination
               className={"mt-5"}
-              totalPages={deletedDriver?.data?.totalPages}
-              currentPage={currentPage}
+              hasNextPage={deletedDriver?.data?.hasNextPage}
+              hasPrevPage={deletedDriver?.data?.hasPrevPage}       
+            currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
           </div>

@@ -6,7 +6,7 @@ import { MdOutlinePayment } from "react-icons/md";
 import { IoLocationSharp } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
-import { SectionHeading, Tabs } from "../Components/HelpingComponent";
+import { SectionHeading, Tabs } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout/TableLayout";
 
 const Billingdetails = () => {

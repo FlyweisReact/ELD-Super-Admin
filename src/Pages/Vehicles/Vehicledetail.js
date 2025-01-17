@@ -30,7 +30,6 @@ const Vehicledetail = () => {
   const [activeDTC, setActiveDTC] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
-  const companyId = localStorage.getItem("companyId");
 
   const fetchHandler = useCallback(() => {
     getApi(endPoints.vehicles.getVehicleDetail(params?.id), {

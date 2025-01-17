@@ -1,12 +1,15 @@
 /** @format */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { LuArrowUpDown } from "react-icons/lu";
 import { getApi } from "../../Repository/Api.js";
 import endPoints from "../../Repository/apiConfig";
 import { useParams } from "react-router-dom";
-import { Loader, Tabs } from "../../Components/HelpingComponent";
-import { dateFormatter, returnFullName } from "../../utils/utils.js";
+import { Loader, Tabs } from "../../Components/HelpingComponents.js";
+import {
+  dateFormatter,
+  returnFullName,
+  formatDateInEST,
+} from "../../utils/utils.js";
 import {
   AssignDriverInTerminal,
   UnAssignDriverInTerminal,
@@ -36,11 +39,11 @@ const TerminalsDatils = () => {
   const tabsOptions = [
     {
       value: "Drivers",
-      label: `Drivers (${detail?.data?.drivers?.length})`,
+      label: `Drivers (${detail?.data?.drivers?.length || 0})`,
     },
     {
       value: "Assets",
-      label: `Assets (${detail?.data?.assets?.length})`,
+      label: `Assets (${detail?.data?.assets?.length || 0})`,
     },
     {
       value: "Admins",
@@ -51,7 +54,7 @@ const TerminalsDatils = () => {
   const ExtraComponent = () => {
     return (
       <button
-        className="bg-[#34B7C1] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"
+        className="bg-[#86E3CE] border-[#86E3CE] w-[173px] flex justify-center items-center gap-2  rounded-lg text-black font-bold h-[45px]"
         onClick={() => setOpen(true)}
       >
         {" "}
@@ -60,23 +63,20 @@ const TerminalsDatils = () => {
     );
   };
 
-  //---
   const driverHead = [
-    <div className="flex items-center justify-center gap-2">
-      Name <LuArrowUpDown />
-    </div>,
-    <div className="flex items-center justify-center gap-2">
-      Start Date <LuArrowUpDown />
-    </div>,
+    <div className="flex items-center justify-center gap-2">Name</div>,
+    <div className="flex items-center justify-center gap-2">Start Date</div>,
     "Cellphone",
     "Unit No.",
     "Timezone",
     "Driver License",
   ];
+
   const driverBody = detail?.data?.drivers?.map((i) => [
     returnFullName(i?.driver),
-    "---",
-    i?.driver?.mobileNumber ? i?.driver?.mobileNumber : "---",
+    i?.driver?.terminalStartDate &&
+      formatDateInEST(i?.driver?.terminalStartDate),
+    i?.driver?.mobileNumber,
     <div
       className="flex gap-1 items-center justify-center"
       onClick={() => {
@@ -87,24 +87,37 @@ const TerminalsDatils = () => {
       {i?.unitNumber}
       <i className="fa-solid fa-pen"></i>
     </div>,
-    i?.driver?.timeZone,
+    detail?.data?.timeZone,
     i?.driver?.license ? i?.driver?.license : "---",
   ]);
 
   const assestHead = ["Asset", "Type", "Attached truck"];
 
-  const assestBody = detail?.data?.assets?.map((item) => [item, "", ""]);
+  const assestBody = detail?.data?.assets?.map((item) => [
+    item?.vehicleNumber,
+    item?.vehicleType,
+    "",
+  ]);
 
   const adminHead = [
-    <div className="flex items-center justify-center gap-2">
-      Name <LuArrowUpDown />
-    </div>,
+    <div className="flex items-center justify-center gap-2">Name</div>,
     "Email",
     "Roles",
     "Terminals(s)",
   ];
 
-  const adminBody = [];
+  const adminBody = [
+    [
+      returnFullName(detail?.data?.contact),
+      detail?.data?.contact?.email,
+      detail?.data?.contact?.userType && (
+        <div className="light-green-highlight-text">
+          {detail?.data?.contact?.userType}
+        </div>
+      ),
+      detail?.data?.name,
+    ],
+  ];
 
   return (
     <>

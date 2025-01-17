@@ -7,7 +7,7 @@ import {
 } from "../../Components/Modals/Modals";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { Dropdown } from "antd";
-import { Pagination, Tabs } from "../../Components/HelpingComponent";
+import { Pagination, Tabs } from "../../Components/HelpingComponents";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import { returnFullName } from "../../utils/utils";

@@ -8,7 +8,7 @@ import {
   Pagination,
   SectionHeading,
   Tabs,
-} from "../../Components/HelpingComponent";
+} from "../../Components/HelpingComponents";
 import TableLayout from "../../Components/TableLayout/TableLayout";
 import { getApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
@@ -88,14 +88,15 @@ const Devices = () => {
         isBtn={false}
       />
       <div className="mt-5">
-        <TableLayout
+      <TableLayout
           thead={thead}
           className="vehicle-table mt-5 mb-5"
           tbody={tbody}
         />
         <Pagination
           className={"mt-5"}
-          totalPages={devices?.data?.totalPages}
+          hasNextPage={devices?.data?.hasNextPage}
+          hasPrevPage={devices?.data?.hasPrevPage}
           currentPage={page}
           setCurrentPage={setPage}
         />
