@@ -27,6 +27,7 @@ const returnNickName = (data) => {
     return "";
   }
 };
+
 const getUpcomingDate = (formattedDate, setFormattedDate) => {
   const [day, month, year] = formattedDate.split("-").map(Number);
   const date = new Date(year, month - 1, day);
@@ -482,8 +483,6 @@ const LogbookDetails = () => {
     }
   }, [detail]);
 
-
-
   // Function to format date from DD-MM-YYYY to YYYY-MM-DD
   const inputDate = (date) => {
     if (!date) {
@@ -527,7 +526,7 @@ const LogbookDetails = () => {
   return (
     <>
       <EditElog
-      show={openModal2}
+        show={openModal2}
         handleClose={() => setOpenModal2(false)}
         title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate
@@ -537,7 +536,7 @@ const LogbookDetails = () => {
       />
 
       <EditElogEvent
-       show={open}
+        show={open}
         handleClose={() => setOpen(false)}
         title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate

@@ -9,8 +9,7 @@ const Loader = ({ isLoading }) => {
   return (
     isLoading && (
       <div className="flex justify-center p-5">
-        {" "}
-        <ClipLoader />{" "}
+        <ClipLoader />
       </div>
     )
   );

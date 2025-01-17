@@ -69,6 +69,7 @@ const apiRequest = async (method, url, payload = null, options = {}) => {
     if (setLoading) setLoading(false);
   }
 };
+
 export const getApi = (url, options) => apiRequest("get", url, null, options);
 export const postApi = (url, payload, options) =>
   apiRequest("post", url, payload, options);
